@@ -1,0 +1,18 @@
+BCTB Style guide:
+  Unlike the smootlight code, which was something of a hot mess, we are
+  going to follow actual python style conventions this time.
+
+method_names
+ClassNames
+variable_names
+Files are modules (like java packages --> multiple classes per file)
+
+INDENTS ARE 2 SPACES.  NOT 4.  NOT 8.  NOT TABS.  Thanks :).
+
+If you write something that is easily testable and mission critical, write a test for it!  Put it in
+the tests folder.  Consult the tests folder of the smootlight code for how
+to do that.
+
+This is going to be boss.
+
+
