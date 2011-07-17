@@ -7,3 +7,11 @@ class Renderer(object):
   """
   def renderBoard(gameBoard, boardIndex):
     raise NotImplementedError
+  
+  """
+  renderScore
+  @param score -- int representing the score of the player
+  @param board index -- 0 for the left board, 1 for the right board.
+  """
+  def renderScore(score, boardIndex):
+    raise NotImplementedError
