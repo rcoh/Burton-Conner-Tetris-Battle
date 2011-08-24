@@ -22,7 +22,7 @@ class DdrInput(object):
   """
   def __init__(self, debug_mode=True):
     """
-    Debug mode prints inputs and also enables the keyboard as in input
+    Debug mode prints inputs from the ddr pads and also enables the keyboard as an input
     """
     pygame.init() #safe to call multiple times
     self.init_joysticks()
@@ -42,7 +42,7 @@ class DdrInput(object):
   def poll(self):
     """
     Returns a tuple of player index (0 or 1) and move, 
-    LEFT, RIGHT, UP, DOWN
+    LEFT, RIGHT, UP, DOWN.  Returns None if there is no new input.  Only returns 1 input at a time.
     """
     event = pygame.event.poll()
     player_move = None
