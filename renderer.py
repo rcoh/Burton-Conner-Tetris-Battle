@@ -33,7 +33,7 @@ class PygameRenderer(Renderer):
   def render_game(self, game_board):
     for (x,y) in game_board:
       pygame.draw.circle(self.background, self.color_deref(game_board[(x,y)]), 
-                         (self.OFFSET[0] + x*self.SCALE, self.OFFSET[1] + y*self.SCALE), self.SCALE)
+          (self.OFFSET[0] + x*self.SCALE, self.OFFSET[1] + y*self.SCALE), self.SCALE)
     self.screen.blit(self.background, (0,0))
     pygame.display.flip()
 
@@ -64,4 +64,4 @@ class LedRenderer(Renderer):
     Performs the mapping between a game_board and a list of (port,packet) pairs.  The port,packet
     pairs should line up with the ip's in IP_ADDRESSES
     """
-    #TODO(rcoh): Right this when we decide on a layout
+    #TODO(rcoh): Write this when we decide on a layout
