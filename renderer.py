@@ -2,9 +2,8 @@ class Renderer(object):
   def render_game(self, game_board):
     """
     renderBoard
-    @param gameBoard -- dictionary of tuples of location (x,y), 0 indexed from
+    @param game_board -- dictionary of tuples of location (x,y), 0 indexed from
     the top left of the board.
-    @param boardIndex -- 0 for the left board, 1 for the right board.
     """
     raise NotImplementedError
 
