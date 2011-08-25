@@ -31,6 +31,7 @@ class PygameRenderer(Renderer):
     self.background.fill(Color(0,0,0))
 
   def render_game(self, game_board):
+    self.background.fill(Color(0,0,0))
     for (x,y) in game_board:
       pygame.draw.circle(self.background, self.color_deref(game_board[(x,y)]), 
           (self.OFFSET[0] + x*self.SCALE, self.OFFSET[1] + y*self.SCALE), self.SCALE)
