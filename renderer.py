@@ -21,7 +21,8 @@ class PygameRenderer(Renderer):
 
   DISPLAY_SIZE = (1000,1000)
   OFFSET = (100, 100)
-  SCALE = 10
+  SCALE = 15
+  RADIUS = 6
   
   def __init__(self):
     pygame.init()
@@ -33,8 +34,11 @@ class PygameRenderer(Renderer):
   def render_game(self, game_board):
     self.background.fill(Color(0,0,0))
     for (x,y) in game_board:
+      disp_x = x
+      if x >= 10:
+          disp_x+=3
       pygame.draw.circle(self.background, self.color_deref(game_board[(x,y)]), 
-          (self.OFFSET[0] + x*self.SCALE, self.OFFSET[1] + y*self.SCALE), self.SCALE)
+          (self.OFFSET[0] + disp_x*self.SCALE, self.OFFSET[1] + y*self.SCALE), self.RADIUS)
     self.screen.blit(self.background, (0,0))
     pygame.display.flip()
 

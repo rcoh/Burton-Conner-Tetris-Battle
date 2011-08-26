@@ -7,7 +7,12 @@ Y = 1
 KEY_LEFT = 276
 KEY_UP = 273
 KEY_DOWN = 274
-KEY_RIGHT = 275 
+KEY_RIGHT = 275
+KEY_A = 97
+KEY_S = 115
+KEY_D = 100
+KEY_W = 119
+
 DIRECTIONS = {0:'LEFT', 1:'RIGHT',  2:'UP', 3:'DOWN'}
 class DdrInput(object):
   """
@@ -18,7 +23,7 @@ class DdrInput(object):
 
 
   DEBUG MODE:
-    Use the arrow keys.  Hold down a modifier (alt, control, etc.) to get player 2
+    Use the arrow keys for player 1, asdw for player 0.
   """
   def __init__(self, debug_mode=True):
     """
@@ -69,14 +74,30 @@ class DdrInput(object):
     if self.debug_mode:
       if event.type == KEY_EVENT:
         if event.key == KEY_LEFT:
+          player_index = 1
           player_move = LEFT
         elif event.key == KEY_RIGHT:
+          player_index = 1
           player_move = RIGHT
         elif event.key == KEY_DOWN:
+          player_index = 1
           player_move = DOWN
         elif event.key == KEY_UP:
+          player_index = 1
           player_move = UP
-        player_index = event.mod == 0
+        elif event.key == KEY_A:
+          player_index = 0
+          player_move = LEFT
+        elif event.key == KEY_D:
+          player_index = 0
+          player_move = RIGHT
+        elif event.key == KEY_S:
+          player_index = 0
+          player_move = DOWN
+        elif event.key == KEY_W:
+          player_index = 0
+          player_move = UP
+       
         if player_move != None:
           return (player_index, player_move)
         else:
