@@ -242,7 +242,7 @@ class TetrisGame(object):
 
     def handle_input(self):
         game_on = True
-        TIME_LIMIT = 3*6
+        TIME_LIMIT = 3*60
         start_time = time()
         drop_time = time()
         while game_on:
