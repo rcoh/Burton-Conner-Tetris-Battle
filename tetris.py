@@ -167,7 +167,6 @@ class Player():
                             else:
                                 self.gs.winner = self.id
                                 
-                        
                         # do we go up a level?
                         if (self.gs.level < NO_OF_LEVELS and 
                             self.score >= self.gs.thresholds[self.gs.level]):
@@ -196,7 +195,7 @@ class GameState():
         self.num_players = 0
         self.level = 1
         self.delay = 800
-        self.thresholds = range(10,100,10)
+        self.thresholds = range(0,100,10)
         self.state = "waiting" #states: waiting (between games), playing, ending
         self.winner = None #winning player id
        
@@ -241,10 +240,9 @@ class TetrisGame(object):
         self.update_gui()
         self.gravity()
 
-#FIX THIS FOR GAME-OVER
     def handle_input(self):
         game_on = True
-        TIME_LIMIT = 3*60
+        TIME_LIMIT = 3*6
         start_time = time()
         drop_time = time()
         while game_on:
@@ -299,9 +297,17 @@ class TetrisGame(object):
             winner_id = self.gameState.winner
             print "in end_game; player",winner_id,"wins"
         else:
-            #CHANGE THISSSS
-            print "0 WINS BY DEFAULT FOR NOW..."
-            winner_id = 0
+            if self.gameState.num_players == 2:
+                if self.players[0].score > self.players[1].score:
+                    winner_id = 0
+                elif self.players[1].score > self.players[0].score:
+                    winner_id = 1
+                else:
+                    winner_id = 2 #tie, show both as winners.
+            elif self.players[0]!=None:
+                winner_id = 0
+            else:
+                winner_id = 1
         self.animate_ending(winner_id)
 
     def board_animation(self, board_id, design):
@@ -312,7 +318,11 @@ class TetrisGame(object):
                         
     def animate_ending(self,winner_board):
         print "game over, display animation"
-        self.board_animation(winner_board,"outline")
+        if winner_board == 2:
+            self.board_animation(0,"outline")
+            self.board_animation(1,"outline")
+        else:
+            self.board_animation(winner_board,"outline")
         self.update_gui()
         for i in range(250):
             print i,
@@ -369,6 +379,11 @@ class TetrisGame(object):
                         d[coord] = "yellow"
                     else:
                         d[coord] = "gray"
+
+                #level
+                level = self.gameState.level
+                d[(level+offset-1,MAXY)] = LEVEL_COLORS[level-1]
+                        
         return d
         
         
