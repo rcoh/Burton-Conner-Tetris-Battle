@@ -37,6 +37,17 @@ class PygameRenderer(Renderer):
       disp_x = x
       if x >= 10:
           disp_x+=3
+      x0 = self.OFFSET[0] - self.SCALE/2 - 3
+      y0 = self.OFFSET[1] - 10
+      x1 = self.OFFSET[0]+8 + 9*self.SCALE
+      y1 = self.OFFSET[1]+8 + 19*self.SCALE
+      b2 = self.SCALE * 13 #x offset for second board
+      line_endpoints = [((x0,y0), (x0,y1)), ((x0,y1), (x1,y1)), ((x1,y1), (x1,y0)), ((x1,y0), (x0,y0)),
+                        ((x0,y1 - 16), (x1,y1 - 16)), ((x0,y1 - 31), (x1,y1 - 31))]
+      for p1,p2 in line_endpoints:
+        pygame.draw.line(self.background, self.color_deref("white"), p1, p2)
+        pygame.draw.line(self.background, self.color_deref("white"), (p1[0]+b2,p1[1]),(p2[0]+b2,p2[1]))
+
       pygame.draw.circle(self.background, self.color_deref(game_board[(x,y)]), 
           (self.OFFSET[0] + disp_x*self.SCALE, self.OFFSET[1] + y*self.SCALE), self.RADIUS)
     self.screen.blit(self.background, (0,0))
