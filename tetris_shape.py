@@ -1,7 +1,6 @@
 LEFT = "left"
-RIGHT = "right"
-DOWN = "down"
-direction_d = { "left": (-1, 0), "right": (1, 0), "down": (0, 1) }
+(LEFT, RIGHT, UP, DOWN) = range(4)
+direction_d = { LEFT: (-1, 0), RIGHT: (1, 0), DOWN: (0, 1) }
 
 class Block(object):
     def __init__( self, (x, y), color):
