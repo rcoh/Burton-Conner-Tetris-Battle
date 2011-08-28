@@ -18,16 +18,18 @@ from ddrinput import DdrInput
 from ddrinput import DIRECTIONS
 import pygame
 
+TIME_LIMIT = 4 * 60  #seconds
+LINES_TO_ADVANCE = 5 #num lines needed to advance to next level
+LEVEL_SPEEDS = [800,700,600,500,400,300,200,150,100,70]
+
 MAXX = 10
 MAXY = 18
-NO_OF_LEVELS = 10
 
 (LEFT, RIGHT, UP, DOWN) = range(4)
 
 COLORS = ["orange", "red", "green", "blue", "purple", "yellow", "magenta"]
 LEVEL_COLORS = ["red", "orange red", "orange", "yellow",
                 "green yellow", "green", "turquoise", "blue", "blue violet", "purple"]
-#COLORS = ["gray"]
 
 class Board():
     """
@@ -168,10 +170,11 @@ class Player():
                                 self.gs.winner = self.id
                                 
                         # do we go up a level?
-                        if (self.gs.level < NO_OF_LEVELS and 
-                            self.score >= self.gs.thresholds[self.gs.level]):
+                        if (self.gs.level < len(LEVEL_SPEEDS)-1 and 
+                            self.score / LINES_TO_ADVANCE >= self.gs.level+1 ):
+                            print "level",self.gs.level
                             self.gs.level+=1
-                            self.gs.delay-=85
+                            self.gs.delay = LEVEL_SPEEDS[self.gs.level]
                         
                         # Signal that the shape has 'landed'
                         return False
@@ -193,9 +196,8 @@ class GameState():
         self.shapes = [square_shape, t_shape,l_shape, reverse_l_shape,
                       z_shape, s_shape,i_shape ]
         self.num_players = 0
-        self.level = 1
-        self.delay = 900
-        self.thresholds = range(0,100,10)
+        self.level = 0 #levels go 0-9
+        self.delay = LEVEL_SPEEDS[0]
         self.state = "waiting" #states: waiting (between games), playing, ending
         self.winner = None #winning player id
        
@@ -242,10 +244,13 @@ class TetrisGame(object):
 
     def handle_input(self):
         game_on = True
-        TIME_LIMIT = 3*60
-        start_time = time()
-        drop_time = time()
+        start_time = None
+        
         while game_on:
+            #change this to have start_time be defined elsewhere
+            if start_time==None and "self.gameState.state==playing":
+                start_time = time()
+                drop_time = time()
             if (self.gameState.state=="ending") or (self.gameState.state=="playing" and time()-start_time > TIME_LIMIT):
                 print "GAME OVER"
                 self.end_game()
@@ -382,7 +387,7 @@ class TetrisGame(object):
 
                 #level
                 level = self.gameState.level
-                d[(level+offset-1,MAXY)] = LEVEL_COLORS[level-1]
+                d[(level+offset,MAXY)] = LEVEL_COLORS[level]
                         
         return d
         
