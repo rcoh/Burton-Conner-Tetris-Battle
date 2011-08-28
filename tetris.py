@@ -171,7 +171,7 @@ class Player():
                         if (self.gs.level < NO_OF_LEVELS and 
                             self.score >= self.gs.thresholds[self.gs.level]):
                             self.gs.level+=1
-                            self.gs.delay-=100
+                            self.gs.delay-=85
                         
                         # Signal that the shape has 'landed'
                         return False
@@ -194,7 +194,7 @@ class GameState():
                       z_shape, s_shape,i_shape ]
         self.num_players = 0
         self.level = 1
-        self.delay = 800
+        self.delay = 900
         self.thresholds = range(0,100,10)
         self.state = "waiting" #states: waiting (between games), playing, ending
         self.winner = None #winning player id
