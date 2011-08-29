@@ -25,7 +25,7 @@ LEVEL_SPEEDS = [800,700,600,500,400,300,200,150,100,70]
 
 MAXX = 10
 MAXY = 18
-(LEFT, RIGHT, UP, DOWN) = range(4)
+(LEFT, RIGHT, UP, DOWN, DROP, DIE) = range(6) 
 
 COLORS = ["orange", "red", "green", "blue", "purple", "yellow", "magenta"]
 LEVEL_COLORS = ["red", "orange red", "orange", "yellow",
@@ -263,14 +263,14 @@ class TetrisGame(object):
             if ev:
                 player,direction = ev
                 #print "Player",player,direction
-                if direction == "DIE": #Exit instruction
+                if direction == DIE: #Exit instruction
                     game_on = False
                     pygame.quit()
                     sys.exit()
                 if self.gameState.state=="playing":
                     if self.players[player]!=None:
                         #DROP is only for debugging purposes for now, to make the game end.
-                        if direction == "DROP":
+                        if direction == DROP:
                             while self.players[player].handle_move( DOWN ):
                                 pass
                         else:

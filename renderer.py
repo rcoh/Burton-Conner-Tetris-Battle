@@ -41,7 +41,7 @@ class PygameRenderer(Renderer):
     for (x,y) in game_board:
       disp_x = x
       if x >= 10:
-          disp_x+=3
+        disp_x+=3
       x0 = self.OFFSET[0] - self.SCALE/2 - 3
       y0 = self.OFFSET[1] - 10
       x1 = self.OFFSET[0]+8 + 9*self.SCALE
@@ -79,7 +79,8 @@ class LedRenderer(Renderer):
           self.sockets[ip].send(final_packet, 0x00)
       except:
         print 'failure sending packet'
-  
+  def color_deref(self, color):
+    return (255, 0, 0)
   def map_to_packets(self, game_board):
     """
     Performs the mapping between a game_board and a list of (port,packet) pairs.  The port,packet
@@ -93,13 +94,14 @@ class LedRenderer(Renderer):
     section_height = 5
     for board_x_min in [0, 10]:
       packet = []
-      for y_start in [20, 15, 10, 5]:
+      for board_y_min in [20, 15, 10, 5]:
         strip = zeros((50,3),'ubyte')
         index = 0
-        for y in range(board_y_min+section_height, board_y_min, -1): 
+        for y in range(board_y_min, board_y_min-section_height, -1): 
           for x in range(board_x_min+section_width, board_x_min, -1):
-            strip[index] = self.color_deref(game_board[(x,y)]) 
+            if (x,y) in game_board:
+              strip[index] = self.color_deref(game_board[(x,y)]) 
         packet.append((1+len(packet), strip))
-      packets.append(packet)
-
+        index += 1
+      packets += packet
     return packets

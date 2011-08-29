@@ -3,7 +3,7 @@ JOY_EVENT = 7
 KEY_EVENT = 2
 X = 0
 Y = 1
-(LEFT, RIGHT, UP, DOWN, DROP) = range(5) 
+(LEFT, RIGHT, UP, DOWN, DROP, DIE) = range(6) 
 KEY_LEFT = 276
 KEY_UP = 273
 KEY_DOWN = 274
@@ -15,7 +15,7 @@ KEY_W = 119
 KEY_SPACE = 32
 KEY_ESC = 27
 
-DIRECTIONS = {0:'LEFT', 1:'RIGHT',  2:'UP', 3:'DOWN', 5:'DROP'}
+DIRECTIONS = {0:'LEFT', 1:'RIGHT',  2:'UP', 3:'DOWN', 5:'DROP', 6:'DIE'}
 class DdrInput(object):
   """
   DdrInput is a class to get input from the particular DDR pads and adapters we have.  It is not
@@ -36,6 +36,7 @@ class DdrInput(object):
     #This is just so that we can get key presses in the demo.  remove when we plug it into a ui
     screen = pygame.display.set_mode((640, 480))
     self.debug_mode = debug_mode
+    self.last_inputs = {}
 
   def init_joysticks(self):
     pygame.joystick.init()
@@ -70,6 +71,7 @@ class DdrInput(object):
       if self.debug_mode and player_move != None:
         print (player_index, player_move)
       if player_move != None:
+        self.last_inputs[player_index][player_move] = 1
         return (player_index, player_move)
       else:
         return None
@@ -101,10 +103,10 @@ class DdrInput(object):
           player_move = UP
         elif event.key == KEY_ESC:
           player_index = 2
-          player_move = "DIE"
+          player_move = DIE
         elif event.key == KEY_SPACE:
           player_index = 1
-          player_move = "DROP"
+          player_move = DROP
        
         if player_move != None:
           return (player_index, player_move)
