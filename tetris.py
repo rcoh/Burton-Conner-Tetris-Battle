@@ -280,7 +280,7 @@ class TetrisGame(object):
                         if self.players[player]!=None:
                             self.start_game()
                 
-                
+                self.update_gui()
          
             elif t%10000==0:
                 t=0
