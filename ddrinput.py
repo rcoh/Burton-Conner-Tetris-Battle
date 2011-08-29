@@ -1,5 +1,7 @@
 import pygame
 import time
+=======
+
 JOY_EVENT = 7
 JOY_EVENT_2 = 10
 KEY_EVENT = 2
@@ -49,7 +51,10 @@ class DdrInput(object):
     for i in range(totaljoy):
       m = pygame.joystick.Joystick(i)
       m.init()
-  
+
+  def reset(self):
+    pygame.event.clear()
+    
   def poll(self):
     """
     Returns a tuple of player index (0 or 1) and move, 
