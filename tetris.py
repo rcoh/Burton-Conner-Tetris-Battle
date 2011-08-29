@@ -217,6 +217,7 @@ class TetrisGame(object):
         self.board_animation(0,"up_arrow")
         self.board_animation(1,"up_arrow")
         self.start_time = None
+        self.input.reset()
         self.update_gui()
         self.handle_input() #this calls all other functions, such as add_player, start_game
        
