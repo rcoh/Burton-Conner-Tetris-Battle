@@ -118,12 +118,13 @@ class Board():
         That is; if there is a 'landed' block there or it is outside the
         board boundary, then return False, otherwise return true.
         """
-        if x < 0 or x >= self.max_x or y < 0 or y >= self.max_y:
+        if x < 0 or x >= self.max_x or y < -3 or y >= self.max_y:
             return False
         elif self.landed.has_key( (x, y) ):
             return False
         else:
             return True
+
 
 #represents a player. each player has a board, other player's board,
 #current shape, score, etc
@@ -371,7 +372,8 @@ class TetrisGame(object):
                 if p.shape:
                     blocks = p.shape.blocks
                     for b in blocks:
-                        d[(b.x+offset*n,b.y)] = b.color
+                        if b.y >= 0:
+                            d[(b.x+offset*n,b.y)] = b.color
             
                 #score  
                 score = p.score
