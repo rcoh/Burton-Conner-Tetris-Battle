@@ -19,16 +19,15 @@ from ddrinput import DIRECTIONS
 import pygame
 
 TIME_LIMIT = 4 * 60  #seconds
-LINES_TO_ADVANCE = 5 #num lines needed to advance to next level
-LEVEL_SPEEDS = [800,700,600,500,400,300,200,150,100,70]
+LINES_TO_ADVANCE = 8 #num lines needed to advance to next level
+LEVEL_SPEEDS = [700,550,400,250,150,110]
 
 MAXX = 10
 MAXY = 18
 (LEFT, RIGHT, UP, DOWN) = range(4)
 
 COLORS = ["orange", "red", "green", "blue", "purple", "yellow", "magenta"]
-LEVEL_COLORS = ["red", "orange red", "orange", "yellow",
-                "green yellow", "green", "turquoise", "blue", "blue violet", "purple"]
+LEVEL_COLORS = ["red", "orange", "yellow", "green", "blue", "purple"]
 
 class Board():
     """
@@ -329,8 +328,7 @@ class TetrisGame(object):
         else:
             self.board_animation(winner_board,"outline","yellow")
         self.update_gui()
-        for i in range(250):
-            print i,
+        sleep(3)
 
     def create_shapes(self,design): #in progress.....
         shapes = {}
