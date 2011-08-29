@@ -1,3 +1,10 @@
+from numpy import zeros
+
+import pygame
+from pygame.locals import Color
+
+import util
+
 class Renderer(object):
   def render_game(self, game_board):
     """
@@ -10,8 +17,6 @@ class Renderer(object):
   def color_deref(self, color_str):
     return Color(color_str)
 
-import pygame
-from pygame.locals import Color
 class PygameRenderer(Renderer):
  
   """
@@ -53,31 +58,48 @@ class PygameRenderer(Renderer):
     self.screen.blit(self.background, (0,0))
     pygame.display.flip()
 
-import util
 class LedRenderer(Renderer):
   """
   Renderer for the LEDs.  Based heavily on IndoorRenderer in Smootlight and 
   general Smootlight abstraction patterns
   """
-  POWER_SUPPLY_IPS = [0,0,0,0] #TODO: Fill in
+  POWER_SUPPLY_IPS = ['10.32.97.17',0,0,0] #TODO: Fill in
   SOCK_PORT = 6038
   sockets = {}
  
   def render_game(self, game_board):
     packets = self.map_to_packets(game_board)
     packets_with_destinations = zip(self.POWER_SUPPLY_IPS, packets)
-    for (ip, (port, packet)) in packets:
+    for (ip, (port, packet)) in packets_with_destinations:
       if not ip in self.sockets:
         self.sockets[ip] = util.getConnectedSocket(ip, self.SOCK_PORT)
       final_packet = util.composePixelStripPacket(packet, port) 
       try:
-        self.sockets[ip].send(packet, 0x00)
+        if self.sockets[ip] != None:
+          self.sockets[ip].send(final_packet, 0x00)
       except:
         print 'failure sending packet'
   
-  def map_to_packets(game_board):
+  def map_to_packets(self, game_board):
     """
     Performs the mapping between a game_board and a list of (port,packet) pairs.  The port,packet
     pairs should line up with the ip's in IP_ADDRESSES
     """
-    #TODO(rcoh): Write this when we decide on a layout
+    #This is hardcoded, mostly because I'm curious of the complexity
+    packets = []
+    board_x_min = 0
+    board_x_max = 10
+    section_width = 10
+    section_height = 5
+    for board_x_min in [0, 10]:
+      packet = []
+      for y_start in [20, 15, 10, 5]:
+        strip = zeros((50,3),'ubyte')
+        index = 0
+        for y in range(board_y_min+section_height, board_y_min, -1): 
+          for x in range(board_x_min+section_width, board_x_min, -1):
+            strip[index] = self.color_deref(game_board[(x,y)]) 
+        packet.append((1+len(packet), strip))
+      packets.append(packet)
+
+    return packets

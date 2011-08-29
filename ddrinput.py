@@ -3,7 +3,7 @@ JOY_EVENT = 7
 KEY_EVENT = 2
 X = 0
 Y = 1
-(LEFT, RIGHT, UP, DOWN) = range(4) 
+(LEFT, RIGHT, UP, DOWN, DROP) = range(5) 
 KEY_LEFT = 276
 KEY_UP = 273
 KEY_DOWN = 274
@@ -15,7 +15,7 @@ KEY_W = 119
 KEY_SPACE = 32
 KEY_ESC = 27
 
-DIRECTIONS = {0:'LEFT', 1:'RIGHT',  2:'UP', 3:'DOWN'}
+DIRECTIONS = {0:'LEFT', 1:'RIGHT',  2:'UP', 3:'DOWN', 5:'DROP'}
 class DdrInput(object):
   """
   DdrInput is a class to get input from the particular DDR pads and adapters we have.  It is not

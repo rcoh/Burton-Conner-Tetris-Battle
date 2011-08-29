@@ -13,6 +13,7 @@ from time import sleep, time
 import random
 import sys
 from renderer import PygameRenderer
+from renderer import LedRenderer
 from tetris_shape import *
 from ddrinput import DdrInput
 from ddrinput import DIRECTIONS
@@ -189,7 +190,7 @@ class Player():
 #contains variables that are shared between the players:
 #levels, delay time, etc
 class GameState():
-    def __init__(self, gui):
+    def __init__(self):
         self.shapes = [square_shape, t_shape,l_shape, reverse_l_shape,
                       z_shape, s_shape,i_shape ]
         self.num_players = 0
@@ -206,7 +207,7 @@ class TetrisGame(object):
     #one-time initialization for gui etc
     def __init__(self):
         print "initialize tetris"
-        self.gui = PygameRenderer()
+        self.gui = [PygameRenderer(), LedRenderer()]
         self.input = DdrInput()
         while True:
             self.init_game()
@@ -216,7 +217,7 @@ class TetrisGame(object):
         print "init next game"
         self.boards = [Board(MAXX,MAXY), Board(MAXX,MAXY)]
         self.players = [None,None]
-        self.gameState = GameState(self.gui)
+        self.gameState = GameState()
         self.board_animation(0,"up_arrow")
         self.board_animation(1,"up_arrow")
         self.update_gui()
@@ -290,7 +291,7 @@ class TetrisGame(object):
                 p.move_my_shape()
             
     def update_gui(self):
-        self.gui.render_game(self.to_dict())
+        [gui.render_game(self.to_dict()) for gui in self.gui]
 
     def end_game(self):
         if self.gameState.winner!=None:
