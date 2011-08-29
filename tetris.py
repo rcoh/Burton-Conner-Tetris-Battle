@@ -24,7 +24,6 @@ LEVEL_SPEEDS = [800,700,600,500,400,300,200,150,100,70]
 
 MAXX = 10
 MAXY = 18
-
 (LEFT, RIGHT, UP, DOWN) = range(4)
 
 COLORS = ["orange", "red", "green", "blue", "purple", "yellow", "magenta"]
@@ -179,10 +178,6 @@ class Player():
                         # Signal that the shape has 'landed'
                         return False
         return True
- 
-    def move_my_shape( self ):
-        if self.shape:
-            self.handle_move( DOWN )
         
     def get_next_shape( self ):
         #Randomly select which tetrominoe will be used next.
@@ -221,6 +216,7 @@ class TetrisGame(object):
         self.gameState = GameState(self.gui)
         self.board_animation(0,"up_arrow")
         self.board_animation(1,"up_arrow")
+        self.start_time = None
         self.update_gui()
         self.handle_input() #this calls all other functions, such as add_player, start_game
        
@@ -240,34 +236,33 @@ class TetrisGame(object):
         self.boards[1].clear()
         self.gameState.state = "playing"
         self.update_gui()
+        self.start_time = time()
+        self.drop_time = time()
         self.gravity()
 
     def handle_input(self):
-        game_on = True
-        start_time = None
         
+        game_on = True
+        t = 0
         while game_on:
-            #change this to have start_time be defined elsewhere
-            if start_time==None and "self.gameState.state==playing":
-                start_time = time()
-                drop_time = time()
-            if (self.gameState.state=="ending") or (self.gameState.state=="playing" and time()-start_time > TIME_LIMIT):
+            t+=1
+            
+            if (self.gameState.state=="ending") or (self.gameState.state=="playing" and time()-self.start_time > TIME_LIMIT):
                 print "GAME OVER"
                 self.end_game()
                 game_on = False
                 return
-            if self.gameState.state=="playing" and time()-drop_time > self.gameState.delay/1000.0:
+            if self.gameState.state=="playing" and time()-self.drop_time > self.gameState.delay/1000.0:
                 self.gravity()
-                drop_time = time()
+                self.drop_time = time()
                 if self.gameState.state != "ending":
                     self.update_gui()
                 
             ev = self.input.poll()
             if ev:
-                #print "EVENT",ev
                 player,direction = ev
                 #print "Player",player,direction
-                if direction == "DIE":
+                if direction == "DIE": #Exit instruction
                     game_on = False
                     pygame.quit()
                     sys.exit()
@@ -285,14 +280,19 @@ class TetrisGame(object):
                     elif direction==DOWN:
                         if self.players[player]!=None:
                             self.start_game()
-                if self.gameState.state != "ending":
-                    self.update_gui()
+                
+                
+         
+            elif t%10000==0:
+                t=0
+                self.update_gui()
+                
                 
                 
     def gravity(self):
         for p in self.players:
             if p:
-                p.move_my_shape()
+                p.handle_move(DOWN)
             
     def update_gui(self):
         self.gui.render_game(self.to_dict())
@@ -315,11 +315,11 @@ class TetrisGame(object):
                 winner_id = 1
         self.animate_ending(winner_id)
 
-    def board_animation(self, board_id, design):
+    def board_animation(self, board_id, design, color="green"):
         b = self.boards[board_id]
         d = self.create_shapes(design)
         for coord in d:
-            b.landed[coord]="green"
+            b.landed[coord]=color
                         
     def animate_ending(self,winner_board):
         print "game over, display animation"
@@ -327,7 +327,7 @@ class TetrisGame(object):
             self.board_animation(0,"outline")
             self.board_animation(1,"outline")
         else:
-            self.board_animation(winner_board,"outline")
+            self.board_animation(winner_board,"outline","yellow")
         self.update_gui()
         for i in range(250):
             print i,
@@ -368,6 +368,7 @@ class TetrisGame(object):
 
             if self.players[n]!=None:
                 p = self.players[n]
+
                 #shapes
                 if p.shape:
                     blocks = p.shape.blocks
@@ -382,12 +383,20 @@ class TetrisGame(object):
                     coord = (MAXX-1-i + offset, MAXY+1)
                     if bit:
                         d[coord] = "yellow"
-                    else:
-                        d[coord] = "gray"
 
                 #level
                 level = self.gameState.level
                 d[(level+offset,MAXY)] = LEVEL_COLORS[level]
+
+                #time
+                if self.start_time!=None:
+                    time_left = (self.start_time + TIME_LIMIT - time()) #seconds left
+                    for i in range(TIME_LIMIT/60): #0,1,2,3 (minutes)
+                        if time_left/60 >= i:
+                            seconds = time_left - 60*i # is in .5-1 secs, etc
+                            if not (.5<seconds<1.0 or 1.5<seconds<2.0 or 2.5<seconds<3.0):
+                                coord = (MAXX-1-i + offset, MAXY)
+                                d[coord] = "white"
                         
         return d
         
