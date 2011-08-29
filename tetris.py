@@ -20,7 +20,7 @@ import pygame
 
 TIME_LIMIT = 4 * 60  #seconds
 LINES_TO_ADVANCE = 8 #num lines needed to advance to next level
-LEVEL_SPEEDS = [700,550,400,250,150,110]
+LEVEL_SPEEDS = [700,550,400,250,160,120]
 
 MAXX = 10
 MAXY = 18
@@ -130,7 +130,6 @@ class Board():
 #current shape, score, etc
 class Player():
     def __init__(self, player_id, gs, myBoard, otherBoard):
-        print "initialize player"
         self.id = player_id
         self.board = myBoard
         self.other_board = otherBoard
@@ -162,7 +161,6 @@ class Player():
                         # game is over!
                         if self.shape is None:
                             self.gs.state = "ending" #you lost!
-                            print "ENDING GAME.... PLAYER",self.id,"LOST"
                             if self.gs.num_players == 2:
                                 self.gs.winner = (self.id + 1) % 2
                             else:
@@ -171,8 +169,8 @@ class Player():
                         # do we go up a level?
                         if (self.gs.level < len(LEVEL_SPEEDS)-1 and 
                             self.score / LINES_TO_ADVANCE >= self.gs.level+1 ):
-                            print "level",self.gs.level
                             self.gs.level+=1
+                            print "level",self.gs.level
                             self.gs.delay = LEVEL_SPEEDS[self.gs.level]
                         
                         # Signal that the shape has 'landed'
@@ -249,7 +247,6 @@ class TetrisGame(object):
             t+=1
             
             if (self.gameState.state=="ending") or (self.gameState.state=="playing" and time()-self.start_time > TIME_LIMIT):
-                print "GAME OVER"
                 self.end_game()
                 game_on = False
                 return
@@ -301,7 +298,7 @@ class TetrisGame(object):
     def end_game(self):
         if self.gameState.winner!=None:
             winner_id = self.gameState.winner
-            print "in end_game; player",winner_id,"wins"
+            print "GAME OVER: layer",winner_id,"wins"
         else:
             if self.gameState.num_players == 2:
                 if self.players[0].score > self.players[1].score:
@@ -323,7 +320,6 @@ class TetrisGame(object):
             b.landed[coord]=color
                         
     def animate_ending(self,winner_board):
-        print "game over, display animation"
         if winner_board == 2:
             self.board_animation(0,"outline")
             self.board_animation(1,"outline")
