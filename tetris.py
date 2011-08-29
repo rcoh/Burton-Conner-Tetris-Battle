@@ -13,6 +13,7 @@ from time import sleep, time
 import random
 import sys
 from renderer import PygameRenderer
+from renderer import LedRenderer
 from tetris_shape import *
 from ddrinput import DdrInput
 from ddrinput import DIRECTIONS
@@ -24,7 +25,7 @@ LEVEL_SPEEDS = [700,550,400,250,160,120]
 
 MAXX = 10
 MAXY = 18
-(LEFT, RIGHT, UP, DOWN) = range(4)
+(LEFT, RIGHT, UP, DOWN, DROP, DIE) = range(6) 
 
 COLORS = ["orange", "red", "green", "blue", "purple", "yellow", "magenta"]
 LEVEL_COLORS = ["red", "orange", "yellow", "green", "blue", "purple"]
@@ -185,7 +186,7 @@ class Player():
 #contains variables that are shared between the players:
 #levels, delay time, etc
 class GameState():
-    def __init__(self, gui):
+    def __init__(self):
         self.shapes = [square_shape, t_shape,l_shape, reverse_l_shape,
                       z_shape, s_shape,i_shape ]
         self.num_players = 0
@@ -201,7 +202,7 @@ class TetrisGame(object):
     #one-time initialization for gui etc
     def __init__(self):
         print "initialize tetris"
-        self.gui = PygameRenderer()
+        self.gui = [PygameRenderer(), LedRenderer()]
         self.input = DdrInput()
         while True:
             self.init_game()
@@ -211,7 +212,7 @@ class TetrisGame(object):
         print "init next game"
         self.boards = [Board(MAXX,MAXY), Board(MAXX,MAXY)]
         self.players = [None,None]
-        self.gameState = GameState(self.gui)
+        self.gameState = GameState()
         self.board_animation(0,"up_arrow")
         self.board_animation(1,"up_arrow")
         self.start_time = None
@@ -260,14 +261,14 @@ class TetrisGame(object):
             if ev:
                 player,direction = ev
                 #print "Player",player,direction
-                if direction == "DIE": #Exit instruction
+                if direction == DIE: #Exit instruction
                     game_on = False
                     pygame.quit()
                     sys.exit()
                 if self.gameState.state=="playing":
                     if self.players[player]!=None:
                         #DROP is only for debugging purposes for now, to make the game end.
-                        if direction == "DROP":
+                        if direction == DROP:
                             while self.players[player].handle_move( DOWN ):
                                 pass
                         else:
@@ -293,7 +294,7 @@ class TetrisGame(object):
                 p.handle_move(DOWN)
             
     def update_gui(self):
-        self.gui.render_game(self.to_dict())
+        [gui.render_game(self.to_dict()) for gui in self.gui]
 
     def end_game(self):
         if self.gameState.winner!=None:
