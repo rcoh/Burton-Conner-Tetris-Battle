@@ -12,6 +12,7 @@ Controls:
 from time import sleep, time
 import random
 import sys
+from renderer import PygameGoodRenderer
 from renderer import PygameRenderer
 from renderer import LedRenderer
 from tetris_shape import *
@@ -202,7 +203,7 @@ class TetrisGame(object):
     #one-time initialization for gui etc
     def __init__(self):
         print "initialize tetris"
-        self.gui = [PygameRenderer(), LedRenderer()]
+        self.gui = [PygameGoodRenderer(), LedRenderer()]
         self.input = DdrInput()
         while True:
             self.init_game()
