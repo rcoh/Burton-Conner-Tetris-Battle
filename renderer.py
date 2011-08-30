@@ -46,6 +46,8 @@ class PygameGoodRenderer(Renderer):
     b2 = self.SCALE * 13 #x offset for second board
 
     font = pygame.font.Font(None, 22)
+    font1 = pygame.font.Font(None, 25)
+    font2 = pygame.font.Font(None, 28)
 
     for n in [0,1]:
       if (n,"score") in game_board:
@@ -54,6 +56,47 @@ class PygameGoodRenderer(Renderer):
         text = font.render(score_string, 1, (255,255,255))
         textpos = (x0 + self.SCALE*3 + b2*n,y1 - self.SCALE- 6)
         self.background.blit(text, textpos)
+
+      if (n,"design") in game_board:
+        design = game_board[(n,"design")]
+
+        x_mid = (x0+x1)/2 + b2*n
+        s = self.SCALE
+
+        if design == "up_arrow":
+          points = [(x_mid-s,y0+13*s),(x_mid-s,y0+9*s),(x_mid-3*s,y0+9*s),
+                    (x_mid,y0+5*s),
+                    (x_mid+3*s,y0+9*s),(x_mid+s,y0+9*s),(x_mid+s,y0+13*s)]
+          pygame.draw.polygon(self.background,(50,100,255), points)
+
+          text = font2.render("Press", 1, (255,255,255))
+          textpos = (x0 + s*3 + b2*n, y0 + 3*s)
+          self.background.blit(text, textpos)
+
+          text = font1.render("to join game", 1, (255,255,255))
+          textpos = (x0 + round(s*1.5) + b2*n, y0 + 14*s)
+          self.background.blit(text, textpos)
+
+        elif design == "down_arrow":
+          points = [(x_mid-s,y0+5*s),(x_mid-s,y0+9*s),(x_mid-3*s,y0+9*s),
+                    (x_mid,y0+13*s),
+                    (x_mid+3*s,y0+9*s),(x_mid+s,y0+9*s),(x_mid+s,y0+5*s)]
+          pygame.draw.polygon(self.background,(50,100,255), points)
+
+          text = font2.render("Press", 1, (255,255,255))
+          textpos = (x0 + s*3 + b2*n, y0 + 3*s)
+          self.background.blit(text, textpos)
+
+          text = font1.render("to start game", 1, (255,255,255))
+          textpos = (x0 + round(s*1.5) + b2*n, y0 + 14*s)
+          self.background.blit(text, textpos)
+
+        elif design == "outline":
+          
+          points = [(x0+b2*n,y0), (x0+b2*n,y1), (x1+b2*n,y1), (x1+b2*n,y0)]
+          pygame.draw.lines(self.background, (255,255,0), True, points, 10)
+        
+        
 
     if (2,"level") in game_board:
       level = game_board[(2,"level")]
@@ -77,7 +120,7 @@ class PygameGoodRenderer(Renderer):
       pygame.draw.line(self.background, self.color_deref("white"), (p1[0]+b2,p1[1]),(p2[0]+b2,p2[1]))
 
     for (x,y) in game_board:
-      if y not in ["level","time_left","score"]:
+      if y not in ["level","time_left","score","design"]:
         disp_x = x
         if x >= 10:
           disp_x+=3

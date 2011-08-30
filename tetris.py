@@ -20,6 +20,7 @@ from ddrinput import DdrInput
 from ddrinput import DIRECTIONS
 import pygame
 
+
 TIME_LIMIT = 4 * 60  #seconds
 LINES_TO_ADVANCE = 8 #num lines needed to advance to next level
 LEVEL_SPEEDS = [700,550,400,250,160,120]
@@ -30,6 +31,11 @@ MAXY = 18
 
 COLORS = ["orange", "red", "green", "blue", "purple", "yellow", "magenta"]
 LEVEL_COLORS = ["red", "orange", "yellow", "green", "blue", "purple"]
+
+## SET MODE TO LIGHTS OR GUI ##
+(LIGHTS, GUI) = range(2)
+#MODE = GUI
+MODE = LIGHTS
 
 class Board():
     """
@@ -203,7 +209,10 @@ class TetrisGame(object):
     #one-time initialization for gui etc
     def __init__(self):
         print "initialize tetris"
-        self.gui = [PygameGoodRenderer(), LedRenderer()]
+        if MODE == GUI:
+            self.gui = [PygameGoodRenderer()]
+        else:
+            self.gui = [PygameRenderer(), LedRenderer()]
         self.input = DdrInput()
         while True:
             self.init_game()
@@ -287,21 +296,18 @@ class TetrisGame(object):
                 t=0
                 self.update_gui()
                 
-                
-                
     def gravity(self):
         for p in self.players:
             if p:
                 p.handle_move(DOWN)
             
     def update_gui(self):
-        #[gui.render_game(self.to_dict()) for gui in self.gui]
-        self.gui[0].render_game(self.to_gui_dict())
+        [gui.render_game(self.to_dict()) for gui in self.gui]
 
     def end_game(self):
         if self.gameState.winner!=None:
             winner_id = self.gameState.winner
-            print "GAME OVER: layer",winner_id,"wins"
+            print "GAME OVER: player",winner_id,"wins"
         else:
             if self.gameState.num_players == 2:
                 if self.players[0].score > self.players[1].score:
@@ -329,9 +335,12 @@ class TetrisGame(object):
         else:
             self.board_animation(winner_board,"outline","yellow")
         self.update_gui()
-        sleep(3)
+        sleep(4)
 
     def create_shapes(self,design): #in progress.....
+        if MODE == GUI:
+            return [(None,design)]
+        
         shapes = {}
         y = 4
         up_diags = [(1,y+4),(1,y+3),(2,y+3),(2,y+2),(3,y+2),(3,y+1),
@@ -356,6 +365,9 @@ class TetrisGame(object):
         return shapes[design]
 
     def to_dict(self):
+        if MODE == GUI:
+            return self.to_gui_dict()
+        
         d = {}
         for n in range(2):
             board = self.boards[n]
@@ -412,7 +424,10 @@ class TetrisGame(object):
             
             #blocks
             for (x,y) in board.landed:
-                d[(x+offset,y)] = board.landed[(x,y)]
+                if x==None:
+                    d[(n,"design")] = y
+                else: 
+                    d[(x+offset,y)] = board.landed[(x,y)]
 
             if self.players[n]!=None:
                 p = self.players[n]
