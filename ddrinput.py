@@ -1,6 +1,5 @@
 import pygame
 import time
-=======
 
 JOY_EVENT = 7
 JOY_EVENT_2 = 10
@@ -63,10 +62,9 @@ class DdrInput(object):
     event = pygame.event.poll()
     player_move = None
     if event.type == JOY_EVENT:
-      player_index, player_move = handle_joy_event(event)
+      player_index, player_move = self.handle_joy_event(event)
       if self.debug_mode:
         print (player_index, player_move)
-    
     if self.debug_mode:
       if event.type == KEY_EVENT or event.type == KEY_RELEASE:
         (player_index, player_move) = self.handle_key_event(event) 
@@ -84,7 +82,6 @@ class DdrInput(object):
       for player_index in self.active_inputs: 
         if self.active_inputs[player_index] != None:
           (fallback_start, start_time, move) = self.active_inputs[player_index]
-          print time.time() - start_time
           if time.time() - start_time > fallback_start:
             fallback_start /= 2
             fallback_start = max(.1, fallback_start)
@@ -98,6 +95,12 @@ class DdrInput(object):
       #there may be a tricky quick way to code this, but this is more readable
       #value == 0 -> released
       player_move = None
+      #if event.type == JOY_EVENT_2:
+      #  player_move = DROP
+      #  return (player_index, player_move)
+      #if event.type == JOY_EVENT_2+1:
+      #  player_move = RELEASE
+      #  return (player_index, player_move)
       if event.axis == X:
         if event.value < 0:
           player_move = LEFT

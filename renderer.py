@@ -24,9 +24,9 @@ class PygameRenderer(Renderer):
   pygame Window.
   """
 
-  DISPLAY_SIZE = (1000,1000)
-  OFFSET = (100, 100)
-  SCALE = 15
+  DISPLAY_SIZE = (1500,1500)
+  OFFSET = (50, 50)
+  SCALE = 20 
   RADIUS = 6
   
   def __init__(self):
