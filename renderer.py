@@ -37,29 +37,53 @@ class PygameGoodRenderer(Renderer):
     self.background.fill(Color(0,0,0))
 
   def render_game(self, game_board):
+    #print game_board
     self.background.fill(Color(0,0,0))
     x0 = self.OFFSET[0] - 1
     y0 = self.OFFSET[1] - 1
     x1 = self.OFFSET[0] + 10*self.SCALE
     y1 = self.OFFSET[1] + 20*self.SCALE - 1
     b2 = self.SCALE * 13 #x offset for second board
+
+    font = pygame.font.Font(None, 22)
+
+    for n in [0,1]:
+      if (n,"score") in game_board:
+        score = game_board[(n,"score")]
+        score_string = "Score: %d" % (score,)
+        text = font.render(score_string, 1, (255,255,255))
+        textpos = (x0 + self.SCALE*3 + b2*n,y1 - self.SCALE- 6)
+        self.background.blit(text, textpos)
+
+    if (2,"level") in game_board:
+      level = game_board[(2,"level")]
+      level_string = "Level: %d" % (level,)
+      text = font.render(level_string, 1, (255,255,255))
+      textpos = (x0 + self.SCALE * 6 ,y0 - self.SCALE * 2)
+      self.background.blit(text, textpos)
+
+    if (2,"time_left") in game_board:
+      time = game_board[(2,"time_left")]
+      time_string = "Time left: %d" % (round(time),)
+      text = font.render(time_string, 1, (255,255,255))
+      textpos = (x1 + self.SCALE * 3 ,y0 - self.SCALE * 2)
+      self.background.blit(text, textpos)
+      
+    
     line_endpoints = [((x0,y0), (x0,y1)), ((x0,y1), (x1,y1)), ((x1,y1), (x1,y0)), ((x1,y0), (x0,y0)),
-                      ((x0,y1 - 15), (x1,y1 - 15)), ((x0,y1 - 30), (x1,y1 - 30))]
+                      ((x0,y1 - self.SCALE*2), (x1,y1 - self.SCALE*2))]
     for p1,p2 in line_endpoints:
       pygame.draw.line(self.background, self.color_deref("white"), p1, p2)
       pygame.draw.line(self.background, self.color_deref("white"), (p1[0]+b2,p1[1]),(p2[0]+b2,p2[1]))
 
-    x_mid = (x0+x1)/2 + self.SCALE
-    pygame.draw.line(self.background, self.color_deref("white"), (x_mid,y1 - 15),(x_mid,y1 - 30))
-    pygame.draw.line(self.background, self.color_deref("white"), (x_mid+b2,y1 - 15),(x_mid+b2,y1 - 30))
-
     for (x,y) in game_board:
-      disp_x = x
-      if x >= 10:
-        disp_x+=3
-      pygame.draw.rect(self.background, self.color_deref(game_board[(x,y)]), 
-          (self.OFFSET[0] + disp_x*self.SCALE, self.OFFSET[1] + y*self.SCALE, self.SCALE-1, self.SCALE-1))
-      
+      if y not in ["level","time_left","score"]:
+        disp_x = x
+        if x >= 10:
+          disp_x+=3
+        pygame.draw.rect(self.background, self.color_deref(game_board[(x,y)]), 
+            (self.OFFSET[0] + disp_x*self.SCALE, self.OFFSET[1] + y*self.SCALE, self.SCALE-1, self.SCALE-1))
+        
     self.screen.blit(self.background, (0,0))
     pygame.display.flip()
      

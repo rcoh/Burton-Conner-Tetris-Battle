@@ -295,7 +295,8 @@ class TetrisGame(object):
                 p.handle_move(DOWN)
             
     def update_gui(self):
-        [gui.render_game(self.to_dict()) for gui in self.gui]
+        #[gui.render_game(self.to_dict()) for gui in self.gui]
+        self.gui[0].render_game(self.to_gui_dict())
 
     def end_game(self):
         if self.gameState.winner!=None:
@@ -397,6 +398,34 @@ class TetrisGame(object):
                                 coord = (MAXX-1-i + offset, MAXY)
                                 d[coord] = "white"
                         
+        return d
+
+    def to_gui_dict(self):
+        d = {}
+        if self.start_time!=None:
+            d[(2,"level")] = self.gameState.level
+            d[(2,"time_left")] = self.start_time + TIME_LIMIT - time()
+                
+        for n in range(2):
+            board = self.boards[n]
+            offset = n*MAXX
+            
+            #blocks
+            for (x,y) in board.landed:
+                d[(x+offset,y)] = board.landed[(x,y)]
+
+            if self.players[n]!=None:
+                p = self.players[n]
+                #score
+                d[(n,"score")] = p.score
+
+                #shapes
+                if p.shape:
+                    blocks = p.shape.blocks
+                    for b in blocks:
+                        if b.y >= 0:
+                            d[(b.x+offset*n,b.y)] = b.color
+         
         return d
         
         
