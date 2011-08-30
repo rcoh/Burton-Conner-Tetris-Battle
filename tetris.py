@@ -20,9 +20,9 @@ from ddrinput import DdrInput
 from ddrinput import DIRECTIONS
 import pygame
 
-TIME_LIMIT = 4 * 60  #seconds
+TIME_LIMIT = 2 * 60  #seconds
 LINES_TO_ADVANCE = 8 #num lines needed to advance to next level
-LEVEL_SPEEDS = [700,550,400,250,160,120]
+LEVEL_SPEEDS = [400,300,400,250,560,520]
 
 MAXX = 10
 MAXY = 18

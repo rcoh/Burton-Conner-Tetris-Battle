@@ -25,8 +25,8 @@ class PygameGoodRenderer(Renderer):
   """
 
   DISPLAY_SIZE = (1000,1000)
-  OFFSET = (100, 100)
-  SCALE = 15
+  OFFSET = (50, 50)
+  SCALE = 20 
   RADIUS = 6
   
   def __init__(self):
