@@ -20,7 +20,7 @@ from ddrinput import DdrInput
 from ddrinput import DIRECTIONS
 import pygame
 
-TIME_LIMIT = 2 * 60  #seconds
+TIME_LIMIT = 5 * 60  #seconds
 LINES_TO_ADVANCE = 8 #num lines needed to advance to next level
 LEVEL_SPEEDS = [400,300,400,250,560,520]
 
@@ -295,8 +295,8 @@ class TetrisGame(object):
                 p.handle_move(DOWN)
             
     def update_gui(self):
-        #[gui.render_game(self.to_dict()) for gui in self.gui]
-        self.gui[0].render_game(self.to_gui_dict())
+        [gui.render_game(self.to_dict()) for gui in self.gui]
+        #self.gui[0].render_game(self.to_gui_dict())
 
     def end_game(self):
         if self.gameState.winner!=None:
