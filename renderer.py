@@ -138,7 +138,8 @@ class LedRenderer(Renderer):
   Renderer for the LEDs.  Based heavily on IndoorRenderer in Smootlight and 
   general Smootlight abstraction patterns
   """
-  POWER_SUPPLY_IPS = ['10.32.0.32','10.32.0.32', '10.32.0.31', '10.32.0.31',0,0] #TODO: Fill in
+  POWER_SUPPLY_IPS = ['10.32.0.32','10.32.0.32', '10.32.0.31',
+                      '10.32.0.31','10.32.0.35','10.32.0.35','10.32.0.33','10.32.0.33'] #TODO: Fill in
   SOCK_PORT = 6038
   sockets = {}
  
@@ -172,19 +173,34 @@ class LedRenderer(Renderer):
     board_x_max = 9 
     section_width = 10
     section_height = 5
-    for board_x_min in [0, 10]: #for each board:
-      for board_y_min in [0, 5, 10, 15]:
-        strip = zeros((50,3),'ubyte')
-        index = 0
-        for y in range(board_y_min, board_y_min+section_height, 1):
-          strand_dir = 1 if y % 5 % 2 == 0 else -1
-          left_x = board_x_min+section_width-1 if strand_dir < 0 else board_x_min
-          right_x = board_x_min-1 if strand_dir < 0 else board_x_min+section_width
-          for x in range(left_x, right_x, strand_dir):
-            print (x,y), index
-            #strip[index] = (x*10,0,y*10)
-            if (x,y) in game_board:
-              strip[index] = self.color_deref(game_board[(x,y)]) 
-            index += 1
-        packets.append((1+(len(packets) % 2), strip))
+    board_x_min = 0
+    #left board
+    for board_y_min in [14, 9, 4, -1]:
+      strip = zeros((50,3),'ubyte')
+      index = 0
+      for y in range(board_y_min+section_height, board_y_min, -1): #for each strip
+        strand_dir = -1 if y % 5 % 2 == 0 else 1 #direction alternates within strip
+        left_x = board_x_min+section_width-1 if strand_dir < 0 else board_x_min
+        right_x = board_x_min-1 if strand_dir < 0 else board_x_min+section_width
+        for x in range(left_x, right_x, strand_dir):
+          #strip[index] = (x*10,0,y*10)
+          if (x,y) in game_board:
+            strip[index] = self.color_deref(game_board[(x,y)]) 
+          index += 1
+      packets.append((1+(len(packets) % 2), strip)) #port alternates by strip
+    #right board:
+    board_x_min = 10
+    for board_y_min in [15, 10, 5, 0]:
+      strip = zeros((50,3),'ubyte')
+      index = 0
+      for y in range(board_y_min, board_y_min + section_height ): #for each strip
+        strand_dir = 1 if y % 5 % 2 == 0 else -1 #direction alternates within strip
+        left_x = board_x_min+section_width-1 if strand_dir < 0 else board_x_min
+        right_x = board_x_min-1 if strand_dir < 0 else board_x_min+section_width
+        for x in range(left_x, right_x, strand_dir):
+          #strip[index] = (x*10,0,y*10)
+          if (x,y) in game_board:
+            strip[index] = self.color_deref(game_board[(x,y)]) 
+          index += 1
+      packets.append((1+(len(packets) % 2), strip)) #port alternates by strip
     return packets
