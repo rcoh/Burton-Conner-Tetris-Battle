@@ -34,8 +34,8 @@ LEVEL_COLORS = ["red", "orange", "yellow", "green", "blue", "purple"]
 
 ## SET MODE TO LIGHTS OR GUI ##
 (LIGHTS, GUI) = range(2)
-#MODE = GUI
-MODE = LIGHTS
+MODE = GUI
+#MODE = LIGHTS
 
 class Board():
     """
@@ -133,6 +133,31 @@ class Board():
         else:
             return True
 
+    def board_stats(self):
+        #print "count holes"
+        cols = [0]*self.max_x
+        y_min = self.max_y
+        #each list represents the filled blocks in the col
+        for i in range(self.max_x):
+            cols[i] = []
+        for (x,y) in self.landed:
+            cols[x]+=[y]
+            if y<y_min:
+                y_min = y
+
+        holes = 0
+        for blocks in cols:
+            if len(blocks)!=0:
+                blocks.sort(reverse=True)
+                b0 = self.max_y
+                for b in blocks:
+                    #print "b0=",b0,"b=",b
+                    holes+=(b0-b-1)
+                    b0 = b
+
+        return (holes,y_min)
+            
+
 
 #represents a player. each player has a board, other player's board,
 #current shape, score, etc
@@ -162,7 +187,9 @@ class Player():
                         self.score += points
                         if self.gs.num_players == 2:
                             if points > 1:
-                                self.other_board.receive_lines(points-1) 
+                                self.other_board.receive_lines(points-1)
+
+                        #print self.board.board_stats()
            
                         # If the shape returned is None, then this indicates that
                         # that the check before creating it failed and the
@@ -189,6 +216,27 @@ class Player():
         #Randomly select which tetrominoe will be used next.
         the_shape = self.gs.shapes[ random.randint(0,len(self.gs.shapes)-1) ]
         return the_shape.check_and_create(self.board)
+
+class AIPlayer(Player):
+    def choose_move(self): #returns (num_rotations, num_moves)
+        #try all 40 moves
+        possible_moves = []
+        for r in range(4): #num rotations
+            for p in range(-4,6): # num L/R moves
+                m = mock_drop(r,p)
+                if m.possible():
+                    moves[(r,p)]= m
+                    
+        #choose that leaves no holes and is lowest      
+        move_choice = (0,5)
+        lowest = moves[move_choice]
+        for rp in moves:
+            if moves[rp].num_holes() == 0 and moves[rp].lowest() < lowest:
+                move_choice = rp
+                lowest = moves[rp].lowest()
+
+        return move_choice
+                
 
 #contains variables that are shared between the players:
 #levels, delay time, etc
@@ -239,6 +287,16 @@ class TetrisGame(object):
             self.board_animation(num,"down_arrow")
             self.gameState.num_players+=1
             self.update_gui()
+
+    def add_ai(player):
+        print "adding AI player",num
+        if self.players[num]==None:
+            self.boards[num].clear()
+            p = AIPlayer(num, self.gameState, self.boards[num], self.boards[(num+1)%2])
+            self.players[num] = p
+            self.board_animation(num,"down_arrow") # change to robot
+            self.gameState.num_players+=1
+            self.update_gui()
         
     def start_game(self):
         print "start game"
@@ -286,6 +344,9 @@ class TetrisGame(object):
                 elif self.gameState.state == "waiting":
                     if direction==UP:
                         self.add_player(player)
+                    #adding ai
+                    elif direction==LEFT:
+                        self.add_ai(player)
                     elif direction==DOWN:
                         if self.players[player]!=None:
                             self.start_game()

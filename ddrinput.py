@@ -1,6 +1,5 @@
 import pygame
 import time
-=======
 
 JOY_EVENT = 7
 JOY_EVENT_2 = 10
@@ -19,6 +18,7 @@ KEY_D = 100
 KEY_W = 119
 KEY_SPACE = 32
 KEY_ESC = 27
+KEY_P = 0
 
 DIRECTIONS = {0:'LEFT', 1:'RIGHT',  2:'UP', 3:'DOWN', 5:'DROP', 6:'DIE'}
 class DdrInput(object):
@@ -70,24 +70,23 @@ class DdrInput(object):
     if self.debug_mode:
       if event.type == KEY_EVENT or event.type == KEY_RELEASE:
         (player_index, player_move) = self.handle_key_event(event) 
-         
     
     if player_move != None:
       if player_move == RELEASE:
         self.active_inputs[player_index] = None
         return None
       else:
-        print 'setting active input'
-        self.active_inputs[player_index] = (.5, time.time(), player_move)
+        #print 'setting active input'
+        self.active_inputs[player_index] = (.3, time.time(), player_move)
       return (player_index, player_move)
     else:
       for player_index in self.active_inputs: 
         if self.active_inputs[player_index] != None:
           (fallback_start, start_time, move) = self.active_inputs[player_index]
-          print time.time() - start_time
+          #print time.time() - start_time
           if time.time() - start_time > fallback_start:
             fallback_start /= 2
-            fallback_start = max(.1, fallback_start)
+            fallback_start = max(.05, fallback_start)
             start_time = time.time()
             self.active_inputs[player_index] = (fallback_start, start_time, move)
             return (player_index, move)
@@ -114,6 +113,8 @@ class DdrInput(object):
       return player_index, player_move
 
   def handle_key_event(self, event):
+    #print event.key
+    (player_index,player_move) = (None,None)
     if event.key == KEY_LEFT:
       player_index = 1
       player_move = LEFT
