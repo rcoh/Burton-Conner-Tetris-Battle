@@ -65,9 +65,9 @@ class DdrInput(object):
       player_index, player_move = self.handle_joy_event(event)
       if self.debug_mode:
         print (player_index, player_move)
-    if self.debug_mode:
-      if event.type == KEY_EVENT or event.type == KEY_RELEASE:
-        (player_index, player_move) = self.handle_key_event(event) 
+    #if self.debug_mode:
+    #  if event.type == KEY_EVENT or event.type == KEY_RELEASE:
+    #    (player_index, player_move) = self.handle_key_event(event) 
          
     
     if player_move != None:
