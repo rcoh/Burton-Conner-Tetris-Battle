@@ -186,6 +186,7 @@ class Player():
                     if direction == DOWN:
                         points = self.board.check_for_complete_row(
                             self.shape.blocks)
+                        """
                         full_rows=0
                         for y in range(18):
                             num_in_row = 0
@@ -195,6 +196,7 @@ class Player():
                             if num_in_row==10:
                                 full_rows+=1
                         if full_rows > 0: print full_rows,"full rows"
+                        """
                         return False
         return True
             
@@ -213,7 +215,7 @@ class Player():
                         self.shape = self.get_next_shape()
 
                         #print stats
-                        print self.board.board_stats()
+                        #print self.board.board_stats()
                         
                         self.score += points
                         if self.gs.num_players == 2:
@@ -238,7 +240,7 @@ class Player():
                             self.gs.delay = LEVEL_SPEEDS[self.gs.level]
 
                         if self.ai and self.gs.state != "ending":
-                            print "choosing move"
+                            #print "choosing move"
                             self.choose_move()
                         # Signal that the shape has 'landed'
                         return False
@@ -293,7 +295,7 @@ class AIPlayer(Player):
         board_copy = Board(landed = self.board.landed.copy()) 
         shape_copy = type(self.shape).check_and_create(board_copy)
         mock_player = Player(2, self.gs, board_copy, Board(), False, shape_copy)
-        print mock_player.board.landed
+        #print mock_player.board.landed
         #print self.board.landed
         #try all 40 moves
         best_move = (0,0)
