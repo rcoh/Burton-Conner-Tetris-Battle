@@ -33,9 +33,11 @@ COLORS = ["orange", "red", "green", "blue", "purple", "yellow", "magenta"]
 LEVEL_COLORS = ["red", "orange", "yellow", "green", "blue", "purple"]
 
 ## SET MODE TO LIGHTS OR GUI ##
-(LIGHTS, GUI) = range(2)
+# right now ai only works right in gui mode because of arrow interference....
+(LIGHTS, GUI, NO_GUI) = range(3)
 #MODE = GUI
 MODE = LIGHTS
+#MODE = NO_GUI
 
 class Board():
     """
@@ -147,6 +149,7 @@ class Board():
                 if y<y_min:
                     y_min = y
 
+        #find number of holes
         holes = 0
         for blocks in cols:
             if len(blocks)!=0:
@@ -156,7 +159,21 @@ class Board():
                     #print "b0=",b0,"b=",b
                     holes+=(b0-b-1)
                     b0 = b
-        #print holes
+
+        #find number of holes from long columns
+        """
+        col_holes = 0
+        for x in range(MAXX):
+            for y in range(MAXY):
+                if (x,y) not in self.landed:
+                    if x>0:
+                        
+                left = 
+        for (x,y) in self.landed:
+            if (type(x)==int):
+                if 
+        """
+        #print "holes=",holes,", ymin=", y_min
         return (holes,y_min)
 
 
@@ -261,10 +278,17 @@ class Player():
             direction = RIGHT
         for s in range(abs(shifts)):
             self.handle_move_ai(direction)
+        moves_down = 0
+        lowest_point = 0
         while self.handle_move_ai( DOWN ):
-            pass
+            moves_down += 1
+            lowest_point = self.get_low_y(self.shape)
         #print rotations, shifts, self.board.board_stats()
-        return self.board.board_stats()
+        (holes, y_min) = self.board.board_stats()
+        return (holes, y_min, moves_down, lowest_point)
+
+    def get_low_y(self,shape):
+        return min([b.y for b in shape.blocks]) 
 
 class AIPlayer(Player):
     def set_move(self,move_list):
@@ -305,8 +329,8 @@ class AIPlayer(Player):
                 board_copy = Board(landed = self.board.landed.copy()) 
                 shape_copy = type(self.shape).check_and_create(board_copy)
                 mock_player = Player(2, self.gs, board_copy, Board(), False, shape_copy)
-                (holes,y) = mock_player.move_shape(r,p)
-                my_score = self.score_board(holes,y)
+                (holes,y,moves_down, low_pt) = mock_player.move_shape(r,p)
+                my_score = self.score_board_4(holes,y,moves_down,low_pt)
                 #print r,p,":",holes,y,"->",my_score
                 if my_score < lowest_score:
                     best_move = (r,p)
@@ -314,8 +338,23 @@ class AIPlayer(Player):
         #print "best move is",best_move,"with score",lowest_score
         self.set_move(self.expand_move(best_move))
 
-    def score_board(self,num_holes,lowest_y):
-        score = num_holes+(-lowest_y+self.board.max_y+2)
+    def score_board_1(self,num_holes,lowest_y,moves_down):
+        score = num_holes-lowest_y-moves_down*.5
+        return score
+
+    def score_board_2(self,num_holes,lowest_y,moves_down):
+        score = num_holes-lowest_y
+        return score
+
+    def score_board_3(self,num_holes,lowest_y,moves_down):
+        score = num_holes-lowest_y
+        if lowest_y < 10:
+            #print "under 10"
+            score+=(10-lowest_y)*3
+        return score
+
+    def score_board_4(self,num_holes,lowest_y,moves_down,lowest_point):
+        score = num_holes-0.9*lowest_y-0.5*lowest_point
         return score
 
 #contains variables that are shared between the players:
@@ -338,8 +377,13 @@ class TetrisGame(object):
         print "initialize tetris"
         if MODE == GUI:
             self.gui = [PygameGoodRenderer()]
-        else:
+        elif MODE == LIGHTS:
             self.gui = [PygameRenderer(), LedRenderer()]
+        elif MODE == NO_GUI:
+            self.gui = []
+        else:
+            print "not a valid mode"
+            self.gui = []
         self.input = DdrInput()
         while True:
             self.init_game()
@@ -373,7 +417,10 @@ class TetrisGame(object):
             self.boards[num].clear()
             p = AIPlayer(num, self.gameState, self.boards[num], self.boards[(num+1)%2], True)
             self.players[num] = p
-            self.board_animation(num,"down_arrow") # change to robot
+            if MODE == GUI:
+                self.board_animation(num,"down_arrow") # change to robot
+            else:
+                p.board.clear() # so arrow doesn't interfere with calculations
             self.gameState.num_players+=1
             p.choose_move()
             self.update_gui()
@@ -409,7 +456,8 @@ class TetrisGame(object):
             
             if not ev:
                 for p in self.players:
-                    if self.gameState.state=="playing" and p and p.ai and t%3000==p.id*500:
+                    #FIX - ONE AI GOES FASTER
+                    if self.gameState.state=="playing" and p and p.ai and t%1000==((p.id+1)*1):
                         ev = p.get_next_move()
                 
             if ev:
@@ -443,12 +491,10 @@ class TetrisGame(object):
                 
                 self.update_gui()
          
-            elif t%10000==0:
+            if t%10000==0:
                 t=0
                 self.update_gui()
-
-
-          
+  
                 
     def gravity(self):
         for p in self.players:
@@ -462,6 +508,9 @@ class TetrisGame(object):
         if self.gameState.winner!=None:
             winner_id = self.gameState.winner
             print "GAME OVER: player",winner_id,"wins"
+            for p in self.players:
+                if p:
+                    print "Player",p.id,"score:",p.score
         else:
             if self.gameState.num_players == 2:
                 if self.players[0].score > self.players[1].score:
@@ -484,8 +533,8 @@ class TetrisGame(object):
                         
     def animate_ending(self,winner_board):
         if winner_board == 2:
-            self.board_animation(0,"outline")
-            self.board_animation(1,"outline")
+            self.board_animation(0,"outline","yellow")
+            self.board_animation(1,"outline","yellow")
         else:
             self.board_animation(winner_board,"outline","yellow")
         self.update_gui()
