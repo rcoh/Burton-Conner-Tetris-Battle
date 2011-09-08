@@ -29,7 +29,7 @@ class Animation:
         self.add_pic(self.base,L2,(11,0))
         self.add_pic(self.base,Y,(14,0))
         """
-        """
+    
         self.add_pic(self.base,sun,(2,0))
 
         self.display(self.base)
@@ -46,7 +46,6 @@ class Animation:
             self.display(self.base)
             self.base = util.shift_dict(self.base, (0,-1))
             sleep(.3)
-"""
         
         for i in range(30):
             the_moon = {}
