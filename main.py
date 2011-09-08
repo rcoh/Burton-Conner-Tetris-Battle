@@ -10,10 +10,15 @@ import util
 class Animation:
 
     def __init__(self):
-        self.gui = [PygameRenderer(), LedRenderer()] 
-        d={}
-        d[1,1] = "yellow"
-        self.base = d
+        self.gui = [PygameRenderer(), LedRenderer()]
+        self.letters = self.create_letter_dict()
+        self.base = {}
+        self.start()
+
+    def start(self):
+        #d[1,1] = "yellow"
+        A = self.get_letter_dict("L","yellow")
+        self.add_pic(self.base,A,(5,5))
         self.animate()
 
     def animate(self):
@@ -22,14 +27,28 @@ class Animation:
         self.base = util.shift_dict(self.base, (1,1))
         sleep(.3)
   
-
     def display(self,d):
         [gui.render_game(d) for gui in self.gui]
 
     def create_letter_dict(self):
         d = {}
-        d["A"] = [(0,1),(0,2),(0,3),(0,4),(1,0),(2,0),(3,0),(4,1),(4,2),(4,3),(4,4)]
+        d["A"] = [(0,1),(0,2),(0,3),(0,4),(1,0),(2,0),(3,0),
+                  (4,1),(4,2),(4,3),(4,4),(1,2),(2,2),(3,2)]
+        d["L"] = [(0,0),(0,1),(0,2),(0,3),(0,4),
+                  (1,4),(2,4),(3,4)]
+                  
+        return d
+
+    def get_letter_dict(self,letter, color):
+        d={}
+        letter_array = self.letters[letter]
+        for key in letter_array:
+            d[key] = color
+        return d
         
+    def add_pic(self,start_dict,new_pic,top_left):
+        for (x,y) in new_pic:
+            start_dict[x+top_left[0],y+top_left[1]]=new_pic[(x,y)]
 
 if __name__ == "__main__":
     animation = Animation()
