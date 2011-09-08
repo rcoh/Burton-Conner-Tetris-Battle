@@ -17,8 +17,14 @@ class Animation:
 
     def start(self):
         #d[1,1] = "yellow"
-        A = self.get_letter_dict("L","yellow")
-        self.add_pic(self.base,A,(5,5))
+        A = self.get_letter_dict("A","yellow")
+        L1 = self.get_letter_dict("L","orange")
+        L2 = self.get_letter_dict("L","red")
+        Y = self.get_letter_dict("Y","purple")
+        self.add_pic(self.base,A,(0,0))
+        self.add_pic(self.base,L1,(6,0))
+        self.add_pic(self.base,L2,(11,0))
+        self.add_pic(self.base,Y,(14,0))
         self.animate()
 
     def animate(self):
@@ -36,6 +42,7 @@ class Animation:
                   (4,1),(4,2),(4,3),(4,4),(1,2),(2,2),(3,2)]
         d["L"] = [(0,0),(0,1),(0,2),(0,3),(0,4),
                   (1,4),(2,4),(3,4)]
+        d["Y"] = [(0,0),(1,1),(2,2),(3,1),(4,0),(2,3),(2,4)]
                   
         return d
 
