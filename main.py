@@ -55,25 +55,31 @@ class Animation:
   def scroll_text(self, text):
     word_dict = {}
     offset_x = 0
+    color_list = ["red", "green", "blue", "orange", "yellow", "purple", "white"]
+    color_index = 0
     for letter in text:
-      letter_dict = self.get_letter_dict(letter, "white")
+      letter_dict = self.get_letter_dict(letter, color_list[color_index])
+      color_index += 1
+      color_index = color_index % len(color_list)
       word_dict = util.compose_dicts(word_dict, letter_dict, (offset_x, 0))
       offset_x += self.get_letter_width(letter) 
     self.base = word_dict
-    for i in range(50):
+    self.base = util.shift_dict(self.base, (10, 6))
+    for i in range(80):
       self.display(self.base)
       self.base = util.shift_dict(self.base, (-1, 0))
-      sleep(.3)
+      sleep(.2)
 
   def get_letter_width(self, letter):
-    if letter == "I":
+    if letter in  ["I", " ", ":", "!"]:
       return 2
     else:
       return 6
   def animate(self):
-    self.scroll_text("YIYI ALLY")
     self.sun()
     self.moon()
+    self.scroll_text("GOODNIGHT ALLY :)")
+    self.scroll_text("SEE YOU SOON! #")
   
   def display(self,d):
     [gui.render_game(d) for gui in self.gui]
@@ -90,6 +96,10 @@ class Animation:
     d["stars"] = self.make_stars()
     d["I"] = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)]
     d[" "] = {}
+    d[":"] = [(0, 1), (0,3)]
+    d[")"] = [(0, 0), (1, 1), (1, 2), (1,3), (0, 4)] 
+    d["#"] = [(1, 1), (3, 1), (0, 3), (1, 4), (2,4), (3,4), (4,3)] 
+    d["!"] = [(0, 0), (0, 1), (0, 2), (0, 4)]
     return d
 
   def make_stars(self):

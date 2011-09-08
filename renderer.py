@@ -36,10 +36,8 @@ class Renderer(object):
 
   def color_deref(self, color):
     if isinstance(color,tuple) and len(color) == 3:
-      print color
       return color
     else:
-      print Color(color)
       return Color(color)
      
 class PygameRenderer(Renderer):
