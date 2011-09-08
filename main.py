@@ -22,11 +22,13 @@ class Animation:
         Y = self.get_letter_dict("Y","purple")
         moon = self.get_letter_dict("moon","yellow")
         sun = self.get_letter_dict("sun","yellow")
+        stars = self.get_letter_dict("stars","gray")
         """
         self.add_pic(self.base,A,(0,0))
         self.add_pic(self.base,L1,(6,0))
         self.add_pic(self.base,L2,(11,0))
         self.add_pic(self.base,Y,(14,0))
+        """
         """
         self.add_pic(self.base,sun,(2,0))
 
@@ -44,6 +46,19 @@ class Animation:
             self.display(self.base)
             self.base = util.shift_dict(self.base, (0,-1))
             sleep(.3)
+"""
+        
+        for i in range(30):
+            the_moon = {}
+            self.base = the_moon
+            self.add_pic(the_moon,stars,(0,0))
+            stars_on = random.sample(stars,30)
+            for key in stars_on:
+                self.base[key] = "white"
+            self.add_pic(the_moon,moon,(3,0))
+            self.display(self.base)
+            sleep(.3)
+        
 
         
         
@@ -67,9 +82,18 @@ class Animation:
                      (2,8),(3,8),(4,8),(1,7),(2,7),(3,7),(1,6),(2,6),(3,6)]
 
         d["sun"] = self.make_sun()
+
+        d["stars"] = self.make_stars()
+        
         
         return d
 
+    def make_stars(self):
+        stars = []
+        for i in range(40):
+            stars+=[(random.randint(0,19),random.randint(0,19))]
+        return stars        
+        
     def make_sun(self):
         final = []
         full = []
