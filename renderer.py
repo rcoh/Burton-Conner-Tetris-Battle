@@ -46,8 +46,8 @@ class PygameGoodRenderer(Renderer):
 
   DISPLAY_SIZE = (1000,1000)
   OFFSET = (50, 50)
-  SCALE = 20 
-  RADIUS = 6
+  SCALE = 20
+  BETWEEN_BOARDS = 0 #scale units
   
   def __init__(self):
     pygame.init()
@@ -63,9 +63,11 @@ class PygameGoodRenderer(Renderer):
     y0 = self.OFFSET[1] - 1
     x1 = self.OFFSET[0] + 10*self.SCALE
     y1 = self.OFFSET[1] + 20*self.SCALE - 1
-    b2 = self.SCALE * 13 #x offset for second board
+    b2 = self.SCALE * (10 + self.BETWEEN_BOARDS) #x offset for second board
 
     font = pygame.font.Font(None, 22)
+    font1 = pygame.font.Font(None, 25)
+    font2 = pygame.font.Font(None, 28)
 
     for n in [0,1]:
       if (n,"score") in game_board:
@@ -75,6 +77,45 @@ class PygameGoodRenderer(Renderer):
         textpos = (x0 + self.SCALE*3 + b2*n,y1 - self.SCALE- 6)
         self.background.blit(text, textpos)
 
+      if (n,"design") in game_board:
+        design = game_board[(n,"design")]
+
+        x_mid = (x0+x1)/2 + b2*n
+        s = self.SCALE
+
+        if design == "up_arrow":
+          points = [(x_mid-s,y0+13*s),(x_mid-s,y0+9*s),(x_mid-3*s,y0+9*s),
+                    (x_mid,y0+5*s),
+                    (x_mid+3*s,y0+9*s),(x_mid+s,y0+9*s),(x_mid+s,y0+13*s)]
+          pygame.draw.polygon(self.background,(50,100,255), points)
+
+          text = font2.render("Press", 1, (255,255,255))
+          textpos = (x0 + s*3 + b2*n, y0 + 3*s)
+          self.background.blit(text, textpos)
+
+          text = font1.render("to join game", 1, (255,255,255))
+          textpos = (x0 + round(s*1.5) + b2*n, y0 + 14*s)
+          self.background.blit(text, textpos)
+
+        elif design == "down_arrow":
+          points = [(x_mid-s,y0+5*s),(x_mid-s,y0+9*s),(x_mid-3*s,y0+9*s),
+                    (x_mid,y0+13*s),
+                    (x_mid+3*s,y0+9*s),(x_mid+s,y0+9*s),(x_mid+s,y0+5*s)]
+          pygame.draw.polygon(self.background,(50,100,255), points)
+
+          text = font2.render("Press", 1, (255,255,255))
+          textpos = (x0 + s*3 + b2*n, y0 + 3*s)
+          self.background.blit(text, textpos)
+
+          text = font1.render("to start game", 1, (255,255,255))
+          textpos = (x0 + round(s*1.5) + b2*n, y0 + 14*s)
+          self.background.blit(text, textpos)
+
+        elif design == "outline":
+          
+          points = [(x0+b2*n,y0), (x0+b2*n,y1), (x1+b2*n,y1), (x1+b2*n,y0)]
+          pygame.draw.lines(self.background, (255,255,0), True, points, 10)
+        
     if (2,"level") in game_board:
       level = game_board[(2,"level")]
       level_string = "Level: %d" % (level,)
@@ -97,7 +138,7 @@ class PygameGoodRenderer(Renderer):
       pygame.draw.line(self.background, self.color_deref("white"), (p1[0]+b2,p1[1]),(p2[0]+b2,p2[1]))
 
     for (x,y) in game_board:
-      if y not in ["level","time_left","score"]:
+      if y not in ["level","time_left","score","design"]:
         disp_x = x
         if x >= 10:
           disp_x+=3
@@ -114,10 +155,11 @@ class PygameRenderer(Renderer):
   pygame Window.
   """
 
-  DISPLAY_SIZE = (1500,1500)
   OFFSET = (50, 50)
-  SCALE = 20 
-  RADIUS = 6
+  SCALE = 20
+  RADIUS = 7
+  DISPLAY_SIZE = (1500,1500)
+  BETWEEN_BOARDS = 0 #scale units
   
   def __init__(self):
     pygame.init()
@@ -128,20 +170,20 @@ class PygameRenderer(Renderer):
 
   def render_game(self, game_board):
     self.background.fill(Color(0,0,0))
-    x0 = self.OFFSET[0] - self.SCALE/2 - 3
+    x0 = self.OFFSET[0] - self.SCALE/2 #- 3
     y0 = self.OFFSET[1] - 10
-    x1 = self.OFFSET[0]+8 + 9*self.SCALE
-    y1 = self.OFFSET[1]+8 + 19*self.SCALE
-    b2 = self.SCALE * 13 #x offset for second board
+    x1 = self.OFFSET[0] + self.SCALE/2  + 9*self.SCALE #+ 3
+    y1 = self.OFFSET[1] + 19.5*self.SCALE
+    b2 = self.SCALE * (10 + self.BETWEEN_BOARDS) #x offset for second board
     line_endpoints = [((x0,y0), (x0,y1)), ((x0,y1), (x1,y1)), ((x1,y1), (x1,y0)), ((x1,y0), (x0,y0)),
-                      ((x0,y1 - 16), (x1,y1 - 16)), ((x0,y1 - 31), (x1,y1 - 31))]
+                      ((x0,y1 - self.SCALE), (x1,y1 - self.SCALE)), ((x0,y1 - 2*self.SCALE), (x1,y1 - 2*self.SCALE))]
     for p1,p2 in line_endpoints:
       pygame.draw.line(self.background, self.color_deref("white"), p1, p2)
       pygame.draw.line(self.background, self.color_deref("white"), (p1[0]+b2,p1[1]),(p2[0]+b2,p2[1]))
 
-    x_mid = (x0+x1)/2 + self.SCALE
-    pygame.draw.line(self.background, self.color_deref("white"), (x_mid,y1 - 16),(x_mid,y1 - 31))
-    pygame.draw.line(self.background, self.color_deref("white"), (x_mid+b2,y1 - 16),(x_mid+b2,y1 - 31))
+    x_mid = (x0+x1)/2
+    pygame.draw.line(self.background, self.color_deref("white"), (x_mid,y1 - self.SCALE),(x_mid,y1 - 2*self.SCALE))
+    pygame.draw.line(self.background, self.color_deref("white"), (x_mid+b2,y1 - self.SCALE),(x_mid+b2,y1 - 2*self.SCALE))
 
     for (x,y) in game_board:
       disp_x = x
