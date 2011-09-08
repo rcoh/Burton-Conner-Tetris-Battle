@@ -39,8 +39,8 @@ from ddrinput import DIRECTIONS
 import pygame
 
 TIME_LIMIT = 5 * 60  #seconds
-LINES_TO_ADVANCE = 8 #num lines needed to advance to next level
-LEVEL_SPEEDS = [400,300,400,250,560,520]
+LINES_TO_ADVANCE = 5 #num lines needed to advance to next level
+LEVEL_SPEEDS = [500,440,380,320,250]
 
 MAXX = 10
 MAXY = 18
