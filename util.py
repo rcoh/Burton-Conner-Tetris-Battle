@@ -37,3 +37,16 @@ def getConnectedSocket(ip,port):
     return sock
   except Exception as inst:
     print 'socket failure'
+
+
+def shift_dict(initial_dict, change_rate, delta_time):
+  """
+  @param initial_dict -- the shape in "root position"
+  @param change_rate -- the change rate in pixels / second
+  @param delta_time -- the time difference in seconds since 0 time
+  """
+  pass
+
+
+
+
