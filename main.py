@@ -54,18 +54,24 @@ class Animation:
 
   def scroll_text(self, text):
     word_dict = {}
+    offset_x = 0
     for letter in text:
-      letter = self.get_letter_dict(letter, "white")
-      word_dict = util.compose_dicts(word_dict, letter, (LETTER_WIDTH, 0))
+      letter_dict = self.get_letter_dict(letter, "white")
+      word_dict = util.compose_dicts(word_dict, letter_dict, (offset_x, 0))
+      offset_x += self.get_letter_width(letter) 
     self.base = word_dict
-    import pdb; pdb.set_trace()
     for i in range(50):
       self.display(self.base)
       self.base = util.shift_dict(self.base, (-1, 0))
       sleep(.3)
 
+  def get_letter_width(self, letter):
+    if letter == "I":
+      return 2
+    else:
+      return 6
   def animate(self):
-    self.scroll_text("GOODNIGHT ALLY")
+    self.scroll_text("YIYI ALLY")
     self.sun()
     self.moon()
   
@@ -82,6 +88,7 @@ class Animation:
 
     d["sun"] = self.make_sun()
     d["stars"] = self.make_stars()
+    d["I"] = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)]
     d[" "] = {}
     return d
 
