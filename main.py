@@ -7,6 +7,8 @@ from ddrinput import DIRECTIONS
 import pygame
 import util
 
+LETTER_WIDTH = 6
+
 class Animation:
 
     def __init__(self):
@@ -128,5 +130,16 @@ class Animation:
         for (x,y) in new_pic:
             start_dict[x+top_left[0],y+top_left[1]]=new_pic[(x,y)]
 
+class TextAnimation:
+  def __init__(self, text):
+    super(TextAnimation, self).__init__()
+    self.base = {}
+    text_width = 0
+    for letter in text:
+      letter_dict = get_dict(letter) ###replace
+      util.compose_dicts(self.base, letter, LETTER_WIDTH)
+      text_width += LETTER_WIDTH
+    
+    self.base = util.shift_dict(self.base, (-text_width, 0))
 if __name__ == "__main__":
     animation = Animation()

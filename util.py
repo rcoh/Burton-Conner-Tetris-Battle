@@ -56,3 +56,17 @@ def shift_dict_copy(initial_dict, change_rate, delta_time):
 
   return return_dict
 
+def compose_dicts(dict1, dict2, offset):
+  result_dict = {}
+  for key in dict1:
+    result_dict[key] = dict1[key]
+
+  for (x, y) in dict2:
+    result_dict[(x + offset[0], y + offset[1])] = dict2[(x, y)]
+
+  return result_dict
+
+def get_dict_bounds(shape_dict):
+  x_list = [loc[0] for loc in shape_dict.keys()]
+  y_list = [loc[1] for loc in shape_dict.keys()]
+  return min(x_list), max(x_list), min(y_list), max(y_list)

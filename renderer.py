@@ -75,9 +75,10 @@ class PygameRenderer(Renderer):
     pygame.draw.line(self.background, self.color_deref("white"), (x_mid+b2,y1 - self.SCALE),(x_mid+b2,y1 - 2*self.SCALE))
 
     for (x,y) in game_board:
-      disp_x = x
-      pygame.draw.circle(self.background, self.color_deref(game_board[(x,y)]), 
-          (self.OFFSET[0] + disp_x*self.SCALE, self.OFFSET[1] + y*self.SCALE), self.RADIUS)
+      if x >= 0 and x < 20 and y >= 0 and y < 20:
+        disp_x = x
+        pygame.draw.circle(self.background, self.color_deref(game_board[(x,y)]), 
+            (self.OFFSET[0] + disp_x*self.SCALE, self.OFFSET[1] + y*self.SCALE), self.RADIUS)
       
     self.screen.blit(self.background, (0,0))
     pygame.display.flip()
