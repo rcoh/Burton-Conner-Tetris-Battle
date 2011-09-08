@@ -187,8 +187,6 @@ class PygameRenderer(Renderer):
 
     for (x,y) in game_board:
       disp_x = x
-      if x >= 10:
-        disp_x+=3
       pygame.draw.circle(self.background, self.color_deref(game_board[(x,y)]), 
           (self.OFFSET[0] + disp_x*self.SCALE, self.OFFSET[1] + y*self.SCALE), self.RADIUS)
       
