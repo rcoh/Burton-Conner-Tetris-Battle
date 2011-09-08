@@ -13,25 +13,41 @@ class Animation:
         self.gui = [PygameRenderer(), LedRenderer()]
         self.letters = self.create_letter_dict()
         self.base = {}
-        self.start()
+        self.animate()
 
-    def start(self):
-        #d[1,1] = "yellow"
+    def animate(self):
         A = self.get_letter_dict("A","yellow")
         L1 = self.get_letter_dict("L","orange")
         L2 = self.get_letter_dict("L","red")
         Y = self.get_letter_dict("Y","purple")
+        moon = self.get_letter_dict("moon","yellow")
+        sun = self.get_letter_dict("sun","yellow")
+        """
         self.add_pic(self.base,A,(0,0))
         self.add_pic(self.base,L1,(6,0))
         self.add_pic(self.base,L2,(11,0))
         self.add_pic(self.base,Y,(14,0))
-        self.animate()
+        """
+        self.add_pic(self.base,sun,(2,0))
 
-    def animate(self):
-      while 1:
         self.display(self.base)
-        self.base = util.shift_dict(self.base, (1,1))
-        sleep(.3)
+        sleep(1)
+        for i in range(20):
+            self.display(self.base)
+            self.base = util.shift_dict(self.base, (0,1))
+            sleep(.3)
+
+        self.base = {}
+        self.add_pic(self.base,moon,(3,20))
+        for i in range(20):
+            print "here"
+            self.display(self.base)
+            self.base = util.shift_dict(self.base, (0,-1))
+            sleep(.3)
+
+        
+        
+            
   
     def display(self,d):
         [gui.render_game(d) for gui in self.gui]
@@ -43,8 +59,40 @@ class Animation:
         d["L"] = [(0,0),(0,1),(0,2),(0,3),(0,4),
                   (1,4),(2,4),(3,4)]
         d["Y"] = [(0,0),(1,1),(2,2),(3,1),(4,0),(2,3),(2,4)]
-                  
+
+        d["moon"] = [(5,0),(6,0),(7,0),(8,0),(3,1),(4,1),(5,1),(6,1),
+                     (2,2),(3,2),(4,2),(1,3),(2,3),(3,3),(1,4),(2,4),(3,4),
+                     (0,5),(1,5),(2,5),(3,5),
+                     (5,10),(6,10),(7,10),(8,10),(3,9),(4,9),(5,9),(6,9),
+                     (2,8),(3,8),(4,8),(1,7),(2,7),(3,7),(1,6),(2,6),(3,6)]
+
+        d["sun"] = self.make_sun()
+        
         return d
+
+    def make_sun(self):
+        final = []
+        full = []
+        half = []
+        quad = [(0,0),(1,0),(2,0),(4,0),(5,0),(6,0),(0,1),(1,1),(2,1),
+             (0,2),(1,2),(3,3),(4,3),(0,4),(4,4),(5,4),(0,5),(5,5),
+             (0,6),(6,5),(6,6),(7,0),(0,7)]
+        half = quad[:]
+        for (x,y) in quad:
+            half += [(-y-1,x)]
+        full = half[:]
+        for (x,y) in half:
+            full += [(x,-y-1)]
+        for (x,y) in full:
+            final += [(x+8,y+8)]
+        print final
+        return final
+        
+        
+
+    def create_picture_dict(self): #multi-color pics...
+        d = {}
+        
 
     def get_letter_dict(self,letter, color):
         d={}
