@@ -42,11 +42,14 @@ def getConnectedSocket(ip,port):
 def shift_dict(initial_dict, change_rate, delta_time):
   """
   @param initial_dict -- the shape in "root position"
-  @param change_rate -- the change rate in pixels / second
+  @param change_rate -- the change rate in pixels / second as a tuple of (x,y)
   @param delta_time -- the time difference in seconds since 0 time
   """
-  pass
+  return_dict = {}
+  delta_x, delta_y = change_rate
+  for (x,y) in initial_dict:
+    return_dict[(x + delta_x * delta_time, y + delta_y * delta_time)] = initial_dict[(x,y)]
 
-
+  return return_dict
 
 
