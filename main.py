@@ -6,7 +6,8 @@ from ddrinput import DdrInput
 from ddrinput import DIRECTIONS
 import pygame
 import util
-import figure_builder
+import colorsys
+#import figure_builder
 
 LETTER_WIDTH = 6
 
@@ -18,17 +19,39 @@ class Animation:
     self.base = {}
     self.animate()
 
+  def fill_background(self,dictionary,color):
+    for x in range(20):
+      for y in range(20):
+        if (x,y) not in dictionary:
+          dictionary[(x,y)] = color
+    
   def sun(self):
     sun = self.get_letter_dict("sun","yellow")
     self.base = {}
     self.add_pic(self.base,sun,(2,0))
 
-    self.display(self.base)
-    sleep(1)
-    for i in range(20):
-      self.display(self.base)
+    h=(135.0/255)
+    s=(224.0/255)
+    v=(185.0/255)
+
+    #(h,s,v)=(0.25, 0.5, 0.4)
+    for i in range(40):
+      v-=(10.0/255)
+      v = max(v,0)
+      r,g,b = colorsys.hsv_to_rgb(h, s, v)
       self.base = util.shift_dict(self.base, (0,1))
-      sleep(.3)
+      #print r,b,g
+      r = round(r*255)
+      g = round(g*255)
+      b = round(b*255)
+      self.fill_background(self.base,(r,g,b))
+      self.display(self.base)
+      if i==0:
+        sleep(1)
+      elif i<22:
+        sleep(.25)
+      else:
+        sleep(.2)
 
   def moon(self):
     moon = self.get_letter_dict("moon","yellow")
@@ -36,20 +59,30 @@ class Animation:
     self.base = {}
     self.add_pic(self.base,moon,(3,20))
     for i in range(20):
-      print "here"
       self.display(self.base)
       self.base = util.shift_dict(self.base, (0,-1))
       sleep(.3)
-    
-    for i in range(30):
+    sleep(.5)
+    for i in range(50):
       the_moon = {}
       self.base = the_moon
       self.add_pic(the_moon,stars,(0,0))
-      stars_on = random.sample(stars,30)
+      num_on = int(len(stars)*.6)
+      print len(stars)
+      stars_on = random.sample(stars,num_on)
       for key in stars_on:
         self.base[key] = "white"
-      self.add_pic(the_moon,moon,(3,0))
+      self.add_pic(the_moon,moon,(3,1))
       self.display(self.base)
+      sleep(.3)
+      
+    self.base = {}
+    on_stars = self.get_letter_dict("stars","gray")
+    self.add_pic(self.base,moon,(3,1))
+    self.add_pic(self.base,on_stars,(0,0))
+    for i in range(20):
+      self.display(self.base)
+      self.base = util.shift_dict(self.base, (0,-1))
       sleep(.3)
 
   def scroll_text(self, text):
@@ -65,7 +98,7 @@ class Animation:
       sleep(.3)
 
   def animate(self):
-    self.scroll_text("GOODNIGHT ALLY")
+    #self.scroll_text("GOODNIGHT ALLY")
     self.sun()
     self.moon()
   
@@ -88,7 +121,12 @@ class Animation:
   def make_stars(self):
     stars = []
     for i in range(40):
-      stars += [(random.randint(0,19),random.randint(0,10))]
+      stars += [(1,2),(1,12),(3,17),(3,9),
+                (5,0),(5,14),(7,12),(7,17),
+                (9,3),(9,6),(11,3),(11,13),
+                (13,9),(13,16),(15,1),(15,13),
+                (17,6),(17,16),(19,3),(19,9)
+      ]
     return stars    
     
   def make_sun(self):
@@ -106,7 +144,7 @@ class Animation:
       full += [(x,-y-1)]
     for (x,y) in full:
       final += [(x+8,y+8)]
-    print final
+    #print final
     return final
     
     
