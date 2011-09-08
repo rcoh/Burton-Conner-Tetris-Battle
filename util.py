@@ -38,8 +38,12 @@ def getConnectedSocket(ip,port):
   except Exception as inst:
     print 'socket failure'
 
-
-def shift_dict(initial_dict, change_rate, delta_time):
+def shift_dict(shape_dict, change):
+  return_dict = {}
+  for (x,y) in shape_dict:
+    return_dict[(x + change[0], y + change[1])] = shape_dict[(x, y)]
+  return return_dict
+def shift_dict_copy(initial_dict, change_rate, delta_time):
   """
   @param initial_dict -- the shape in "root position"
   @param change_rate -- the change rate in pixels / second as a tuple of (x,y)
@@ -51,5 +55,4 @@ def shift_dict(initial_dict, change_rate, delta_time):
     return_dict[(x + delta_x * delta_time, y + delta_y * delta_time)] = initial_dict[(x,y)]
 
   return return_dict
-
 
