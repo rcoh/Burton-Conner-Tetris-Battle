@@ -18,7 +18,9 @@
 # <http://www.gnu.org/licenses/>.
 
 from numpy import zeros
+from pygame import Color
 import socket
+import random
 argDict = {'flags': 0, 'startcode': 0x0fff, 'pad':0}
 
 # Allocate a buffer for transmitted packets and fill it with magic
@@ -65,6 +67,22 @@ def compose_dicts(dict1, dict2, offset):
     result_dict[(x + offset[0], y + offset[1])] = dict2[(x, y)]
 
   return result_dict
+
+def twinkle(dict1):
+  for key in dict1:
+    if isinstance(dict1[key], str):
+      dict1[key] = Color(dict1[key])[:3]
+    r,g,b = dict1[key]
+    dict1[key] = [r + random.randint(-5,5), g + random.randint(-5, 5), b + random.randint(-5, 5)]
+    dict1[key] = safe_color(dict1[key])
+  return dict1
+
+def safe_color(c):
+    """Ensures that a color is valid"""
+    c[0] = c[0] if c[0] < 255 else 255
+    c[1] = c[1] if c[1] < 255 else 255
+    c[2] = c[2] if c[2] < 255 else 255
+    return c
 
 def get_dict_bounds(shape_dict):
   x_list = [loc[0] for loc in shape_dict.keys()]

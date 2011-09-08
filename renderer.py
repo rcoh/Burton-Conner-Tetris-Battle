@@ -34,8 +34,13 @@ class Renderer(object):
     """
     raise NotImplementedError
 
-  def color_deref(self, color_str):
-    return Color(color_str)
+  def color_deref(self, color):
+    if isinstance(color,tuple) and len(color) == 3:
+      print color
+      return color
+    else:
+      print Color(color)
+      return Color(color)
      
 class PygameRenderer(Renderer):
  
@@ -107,7 +112,10 @@ class LedRenderer(Renderer):
       except:
         print 'failure sending packet'
   def color_deref(self, color):
-    return Color(color)[0:3]
+    if isinstance(color,tuple) and len(color) == 3:
+      return color
+    else:
+      return Color(color)[0:3]
   def fake_map_to_packets(self, game_board):
     strip = zeros((50,3), 'ubyte')
     strip[:] = (255,255,0)
