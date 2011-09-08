@@ -21,6 +21,10 @@ class Animation:
 
     def display(self,d):
         [gui.render_game(d) for gui in self.gui]
+
+    def create_letter_dict(self):
+        d = {}
+        d["A"] = [(0,1),(0,2),(0,3),(0,4),(1,0),(2,0),(3,0),(4,1),(4,2),(4,3),(4,4)]
         
 
 if __name__ == "__main__":

@@ -63,7 +63,7 @@ class PygameGoodRenderer(Renderer):
     y0 = self.OFFSET[1] - 1
     x1 = self.OFFSET[0] + 10*self.SCALE
     y1 = self.OFFSET[1] + 20*self.SCALE - 1
-    b2 = self.SCALE * (10 + self.BETWEEN_BOARDS) #x offset for second board
+    b2 = self.SCALE * (10 * self.BETWEEN_BOARDS) #x offset for second board
 
     font = pygame.font.Font(None, 22)
     font1 = pygame.font.Font(None, 25)
@@ -174,7 +174,7 @@ class PygameRenderer(Renderer):
     y0 = self.OFFSET[1] - 10
     x1 = self.OFFSET[0] + self.SCALE/2  + 9*self.SCALE #+ 3
     y1 = self.OFFSET[1] + 19.5*self.SCALE
-    b2 = self.SCALE * (10 + self.BETWEEN_BOARDS) #x offset for second board
+    b2 = self.SCALE * (10 * self.BETWEEN_BOARDS) #x offset for second board
     line_endpoints = [((x0,y0), (x0,y1)), ((x0,y1), (x1,y1)), ((x1,y1), (x1,y0)), ((x1,y0), (x0,y0)),
                       ((x0,y1 - self.SCALE), (x1,y1 - self.SCALE)), ((x0,y1 - 2*self.SCALE), (x1,y1 - 2*self.SCALE))]
     for p1,p2 in line_endpoints:
