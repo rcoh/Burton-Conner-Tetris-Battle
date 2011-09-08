@@ -36,117 +36,6 @@ class Renderer(object):
 
   def color_deref(self, color_str):
     return Color(color_str)
-
-class PygameGoodRenderer(Renderer):
- 
-  """
-  Based heavily off of PygameRenderer in SmootLight.  Renders Tetris to a 
-  pygame Window.
-  """
-
-  DISPLAY_SIZE = (1000,1000)
-  OFFSET = (50, 50)
-  SCALE = 20
-  BETWEEN_BOARDS = 0 #scale units
-  
-  def __init__(self):
-    pygame.init()
-    self.screen = pygame.display.set_mode(self.DISPLAY_SIZE)
-    self.background = pygame.Surface(self.screen.get_size())
-    self.background = self.background.convert()
-    self.background.fill(Color(0,0,0))
-
-  def render_game(self, game_board):
-    #print game_board
-    self.background.fill(Color(0,0,0))
-    x0 = self.OFFSET[0] - 1
-    y0 = self.OFFSET[1] - 1
-    x1 = self.OFFSET[0] + 10*self.SCALE
-    y1 = self.OFFSET[1] + 20*self.SCALE - 1
-    b2 = self.SCALE * (10 + self.BETWEEN_BOARDS) #x offset for second board
-
-    font = pygame.font.Font(None, 22)
-    font1 = pygame.font.Font(None, 25)
-    font2 = pygame.font.Font(None, 28)
-
-    for n in [0,1]:
-      if (n,"score") in game_board:
-        score = game_board[(n,"score")]
-        score_string = "Score: %d" % (score,)
-        text = font.render(score_string, 1, (255,255,255))
-        textpos = (x0 + self.SCALE*3 + b2*n,y1 - self.SCALE- 6)
-        self.background.blit(text, textpos)
-
-      if (n,"design") in game_board:
-        design = game_board[(n,"design")]
-
-        x_mid = (x0+x1)/2 + b2*n
-        s = self.SCALE
-
-        if design == "up_arrow":
-          points = [(x_mid-s,y0+13*s),(x_mid-s,y0+9*s),(x_mid-3*s,y0+9*s),
-                    (x_mid,y0+5*s),
-                    (x_mid+3*s,y0+9*s),(x_mid+s,y0+9*s),(x_mid+s,y0+13*s)]
-          pygame.draw.polygon(self.background,(50,100,255), points)
-
-          text = font2.render("Press", 1, (255,255,255))
-          textpos = (x0 + s*3 + b2*n, y0 + 3*s)
-          self.background.blit(text, textpos)
-
-          text = font1.render("to join game", 1, (255,255,255))
-          textpos = (x0 + round(s*1.5) + b2*n, y0 + 14*s)
-          self.background.blit(text, textpos)
-
-        elif design == "down_arrow":
-          points = [(x_mid-s,y0+5*s),(x_mid-s,y0+9*s),(x_mid-3*s,y0+9*s),
-                    (x_mid,y0+13*s),
-                    (x_mid+3*s,y0+9*s),(x_mid+s,y0+9*s),(x_mid+s,y0+5*s)]
-          pygame.draw.polygon(self.background,(50,100,255), points)
-
-          text = font2.render("Press", 1, (255,255,255))
-          textpos = (x0 + s*3 + b2*n, y0 + 3*s)
-          self.background.blit(text, textpos)
-
-          text = font1.render("to start game", 1, (255,255,255))
-          textpos = (x0 + round(s*1.5) + b2*n, y0 + 14*s)
-          self.background.blit(text, textpos)
-
-        elif design == "outline":
-          
-          points = [(x0+b2*n,y0), (x0+b2*n,y1), (x1+b2*n,y1), (x1+b2*n,y0)]
-          pygame.draw.lines(self.background, (255,255,0), True, points, 10)
-        
-    if (2,"level") in game_board:
-      level = game_board[(2,"level")]
-      level_string = "Level: %d" % (level,)
-      text = font.render(level_string, 1, (255,255,255))
-      textpos = (x0 + self.SCALE * 6 ,y0 - self.SCALE * 2)
-      self.background.blit(text, textpos)
-
-    if (2,"time_left") in game_board:
-      time = game_board[(2,"time_left")]
-      time_string = "Time left: %d" % (round(time),)
-      text = font.render(time_string, 1, (255,255,255))
-      textpos = (x1 + self.SCALE * 3 ,y0 - self.SCALE * 2)
-      self.background.blit(text, textpos)
-      
-    
-    line_endpoints = [((x0,y0), (x0,y1)), ((x0,y1), (x1,y1)), ((x1,y1), (x1,y0)), ((x1,y0), (x0,y0)),
-                      ((x0,y1 - self.SCALE*2), (x1,y1 - self.SCALE*2))]
-    for p1,p2 in line_endpoints:
-      pygame.draw.line(self.background, self.color_deref("white"), p1, p2)
-      pygame.draw.line(self.background, self.color_deref("white"), (p1[0]+b2,p1[1]),(p2[0]+b2,p2[1]))
-
-    for (x,y) in game_board:
-      if y not in ["level","time_left","score","design"]:
-        disp_x = x
-        if x >= 10:
-          disp_x+=3
-        pygame.draw.rect(self.background, self.color_deref(game_board[(x,y)]), 
-            (self.OFFSET[0] + disp_x*self.SCALE, self.OFFSET[1] + y*self.SCALE, self.SCALE-1, self.SCALE-1))
-        
-    self.screen.blit(self.background, (0,0))
-    pygame.display.flip()
      
 class PygameRenderer(Renderer):
  
@@ -174,7 +63,7 @@ class PygameRenderer(Renderer):
     y0 = self.OFFSET[1] - 10
     x1 = self.OFFSET[0] + self.SCALE/2  + 9*self.SCALE #+ 3
     y1 = self.OFFSET[1] + 19.5*self.SCALE
-    b2 = self.SCALE * (10 + self.BETWEEN_BOARDS) #x offset for second board
+    b2 = self.SCALE * 10 #x offset for second board
     line_endpoints = [((x0,y0), (x0,y1)), ((x0,y1), (x1,y1)), ((x1,y1), (x1,y0)), ((x1,y0), (x0,y0)),
                       ((x0,y1 - self.SCALE), (x1,y1 - self.SCALE)), ((x0,y1 - 2*self.SCALE), (x1,y1 - 2*self.SCALE))]
     for p1,p2 in line_endpoints:
@@ -186,9 +75,10 @@ class PygameRenderer(Renderer):
     pygame.draw.line(self.background, self.color_deref("white"), (x_mid+b2,y1 - self.SCALE),(x_mid+b2,y1 - 2*self.SCALE))
 
     for (x,y) in game_board:
-      disp_x = x
-      pygame.draw.circle(self.background, self.color_deref(game_board[(x,y)]), 
-          (self.OFFSET[0] + disp_x*self.SCALE, self.OFFSET[1] + y*self.SCALE), self.RADIUS)
+      if x >= 0 and x <= 20 and y >= 0 and y <= 20:
+        disp_x = x
+        pygame.draw.circle(self.background, self.color_deref(game_board[(x,y)]), 
+            (self.OFFSET[0] + disp_x*self.SCALE, self.OFFSET[1] + y*self.SCALE), self.RADIUS)
       
     self.screen.blit(self.background, (0,0))
     pygame.display.flip()
