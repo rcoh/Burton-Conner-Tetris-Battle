@@ -176,12 +176,15 @@ class LedRenderer(Renderer):
           self.sockets[ip].send(final_packet, 0x00)
       except:
         print 'failure sending packet'
+        
   def color_deref(self, color):
     return Color(color)[0:3]
+    
   def fake_map_to_packets(self, game_board):
     strip = zeros((50,3), 'ubyte')
     strip[:] = (255,255,0)
     return [(1, strip), (2, strip)] * 4
+    
   def map_to_packets(self, game_board):
     """
     Performs the mapping between a game_board and a list of (port,packet) pairs.  The port,packet
@@ -203,7 +206,6 @@ class LedRenderer(Renderer):
         left_x = board_x_min+section_width-1 if strand_dir < 0 else board_x_min
         right_x = board_x_min-1 if strand_dir < 0 else board_x_min+section_width
         for x in range(left_x, right_x, strand_dir):
-          #strip[index] = (x*10,0,y*10)
           if (x,y) in game_board:
             strip[index] = self.color_deref(game_board[(x,y)]) 
           index += 1
@@ -218,7 +220,6 @@ class LedRenderer(Renderer):
         left_x = board_x_min+section_width-1 if strand_dir < 0 else board_x_min
         right_x = board_x_min-1 if strand_dir < 0 else board_x_min+section_width
         for x in range(left_x, right_x, strand_dir):
-          #strip[index] = (x*10,0,y*10)
           if (x,y) in game_board:
             strip[index] = self.color_deref(game_board[(x,y)]) 
           index += 1
