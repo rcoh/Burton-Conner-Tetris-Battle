@@ -1,6 +1,8 @@
 from PIL import Image
 import sys
 
+loaded_image = None
+
 def dict_from_image_file(file_loc, figure_size):
   im = Image.open(file_loc)
   im_br = im.size
@@ -17,9 +19,11 @@ def load_dict_from_image(im, im_bounds, figure_size):
       color_at_loc = color_deref(im.getpixel(sample_loc))
       if color_at_loc != None:
         return_dict[(x, y)] = color_at_loc
-
   return return_dict
 
+def load_gif(file_loc): 
+
+def get_image_frame(
 def color_deref(color):
   if color == (0, 0, 0):
     return 1
