@@ -77,7 +77,7 @@ class Player():
         self.score = 0
         self.gs = gs
         self.direction = player_id #0 is right, 1 is left
-        
+
     def handle_move(self, dir):
         #add handling for case when dir is opposite direction of movement
         self.direction = dir
@@ -102,7 +102,7 @@ class GameState():
         self.delay = LEVEL_SPEEDS[0]
         self.state = "waiting" #states: waiting (between games), playing, ending
         self.winner = None #winning player id
-        
+
 #runs the overall game. initializes both player and any displays
 class TronGame(object):
 
@@ -126,7 +126,7 @@ class TronGame(object):
         self.input.reset()
         self.update_gui()
         self.handle_input() #this calls all other functions, such as add_player, start_game
-       
+
     def add_player(self,num): # 0=left, 1=right
         print "adding player",num
         if self.players[num]==None:
@@ -136,7 +136,7 @@ class TronGame(object):
             self.board_animation(num,"down_arrow")
             self.gameState.num_players+=1
             self.update_gui()
-        
+
     def start_game(self):
         print "start game"
         self.board.clear()
@@ -151,7 +151,7 @@ class TronGame(object):
         t = 0
         while game_on:
             t+=1
-            
+
             if (self.gameState.state=="ending") or (self.gameState.state=="playing" and time()-self.start_time > TIME_LIMIT):
                 self.end_game()
                 game_on = False
@@ -161,7 +161,7 @@ class TronGame(object):
                 self.drop_time = time()
                 if self.gameState.state != "ending":
                     self.update_gui()
-                
+
             ev = self.input.poll()
             if ev:
                 player,direction = ev
@@ -179,20 +179,20 @@ class TronGame(object):
                     elif direction==DOWN:
                         if self.players[player]!=None:
                             self.start_game()
-                
+
                 self.update_gui()
-         
+
             elif t%10000==0:
                 t=0
                 self.update_gui()
-                
-                
+
+
     #this makes the players move            
     def gravity(self):
         for p in self.players:
             if p:
                 p.move_tron()
-            
+
     def update_gui(self):
         [gui.render_game(self.to_dict()) for gui in self.gui]
         #self.gui[0].render_game(self.to_gui_dict())
@@ -220,7 +220,7 @@ class TronGame(object):
         d = self.create_shapes(design)
         for coord in d:
             b.landed[coord]=color
-                        
+
     def animate_ending(self,winner_board):
         if winner_board == 2:
             self.board_animation(0,"outline")
@@ -234,7 +234,7 @@ class TronGame(object):
         shapes = {}
         y = 4
         up_diags = [(1,y+4),(1,y+3),(2,y+3),(2,y+2),(3,y+2),(3,y+1),
-                 (8,y+4),(8,y+3),(7,y+3),(7,y+2),(6,y+2),(6,y+1)]
+                (8,y+4),(8,y+3),(7,y+3),(7,y+2),(6,y+2),(6,y+1)]
         down_diags = [(x0,10-y0+2*y) for (x0,y0) in up_diags]
         line = [(i,j) for i in [4,5] for j in range(y,y+11)]
         up_arrow = line[:]
@@ -246,12 +246,12 @@ class TronGame(object):
         sides = [(i,j) for i in [0,9] for j in range(18)]
         tb = [(i,j) for i in range(10) for j in [0,17]]
         outline = tb + sides
-            
+
         shapes["down_arrow"] = down_arrow
         shapes["up_arrow"] = up_arrow
         shapes["outline"] = outline
         shapes["test"] = [(5,5)]
-        
+
         return shapes[design]
 
     def to_dict(self):
@@ -286,7 +286,7 @@ class TronGame(object):
                             if not (.5<seconds<1.0 or 1.5<seconds<2.0 or 2.5<seconds<3.0):
                                 coord = (MAXX-1-i + offset, MAXY)
                                 d[coord] = "white"
-                        
+
         return d
     """
     def to_gui_dict(self):
@@ -294,11 +294,11 @@ class TronGame(object):
         if self.start_time!=None:
             d[(2,'level')] = self.gameState.level
             d[(2,'time_left')] = self.start_time + TIME_LIMIT - time()
-                
+
         for n in range(2):
             board = self.boards[n]
             offset = n*MAXX
-            
+
             #blocks
             for (x,y) in board.landed:
                 d[(x+offset,y)] = board.landed[(x,y)]
@@ -314,10 +314,10 @@ class TronGame(object):
                     for b in blocks:
                         if b.y >= 0:
                             d[(b.x+offset*n,b.y)] = b.color
-         
+
         return d
       """    
-        
+
 if __name__ == "__main__":
     print """Burton-Conner Tetris Battle  Copyright (C) 2010, 2011  Simon Peverett
                              Copyright (C) 2011 Russell Cohen, Leah Alpert
@@ -326,4 +326,4 @@ This program comes with ABSOLUTELY NO WARRANTY; for details see
 This is free software, and you are welcome to redistribute it under certain
 conditions; see <http://gnu.org/licenses/gpl#content> for details."""
 
-    tetrisGame = TetrisGame()
+    tronGame = TronGame()
