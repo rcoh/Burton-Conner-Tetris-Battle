@@ -82,7 +82,7 @@ class Player():
         #add handling for case when dir is opposite direction of movement
         self.direction = dir
 
-   def move_tron(self):
+    def move_tron(self):
         self.position[0] += MOVES[self.direction][0]
         self.position[1] += MOVES[self.direction][1]
         if self.position in self.board:
