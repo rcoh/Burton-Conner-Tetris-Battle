@@ -43,10 +43,9 @@ LEVEL_SPEEDS = [300,250,200,150]
 
 MAXX = 20
 MAXY = 18
-(RIGHT, LEFT, UP, DOWN) = range(4)
+(RIGHT, LEFT, UP, DOWN, DIE) = range(5)
 MOVES = {RIGHT:(1,0), LEFT:(-1,0), UP:(1,0), DOWN:(-1,0)}
 
-COLORS = ["orange", "red", "green", "blue", "purple", "yellow", "magenta"]
 LEVEL_COLORS = ["red", "orange", "yellow", "green", "blue", "purple"]
 
 #one 20x18 board shared between players
@@ -122,6 +121,7 @@ class TronGame(object):
         self.gameState = GameState()
         self.board_animation(0,"up_arrow")
         self.board_animation(1,"up_arrow")
+        self.board.clear()
         self.start_time = None
         self.input.reset()
         self.update_gui()
@@ -130,7 +130,6 @@ class TronGame(object):
     def add_player(self,num): # 0=left, 1=right
         print "adding player",num
         if self.players[num]==None:
-            self.boards[num].clear()
             p = Player(num, self.gameState, self.board)
             self.players[num] = p
             self.board_animation(num,"down_arrow")
@@ -139,9 +138,7 @@ class TronGame(object):
 
     def start_game(self):
         print "start game"
-        self.board.clear()
         self.gameState.state = "playing"
-        self.update_gui()
         self.start_time = time()
         self.drop_time = time()
         self.gravity()
@@ -170,9 +167,8 @@ class TronGame(object):
                     game_on = False
                     pygame.quit()
                     sys.exit()
-                if self.gameState.state=="playing":
-                    if self.players[player]!=None:
-                        self.players[player].handle_move(direction)
+                if self.gameState.state=="playing" and self.players[player]!=None:
+                    self.players[player].handle_move(direction)
                 elif self.gameState.state == "waiting":
                     if direction==UP:
                         self.add_player(player)
@@ -185,7 +181,6 @@ class TronGame(object):
             elif t%10000==0:
                 t=0
                 self.update_gui()
-
 
     #this makes the players move            
     def gravity(self):
@@ -200,7 +195,7 @@ class TronGame(object):
     def end_game(self):
         if self.gameState.winner!=None:
             winner_id = self.gameState.winner
-            print "GAME OVER: layer",winner_id,"wins"
+            print "GAME OVER: player",winner_id,"wins"
         else:
             if self.gameState.num_players == 2:
                 if self.players[0].score > self.players[1].score:
