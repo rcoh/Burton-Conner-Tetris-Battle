@@ -40,7 +40,7 @@ import pygame
 
 TIME_LIMIT = 5 * 60  #seconds
 LINES_TO_ADVANCE = 5 #num lines needed to advance to next level
-LEVEL_SPEEDS = [500,400,350,300,250,100]
+LEVEL_SPEEDS = [500, 400, 350, 300, 250, 100]
 
 MAXX = 10
 MAXY = 18
@@ -313,7 +313,8 @@ class TetrisGame(object):
                 p.handle_move(DOWN)
             
     def update_gui(self):
-        [gui.render_game(self.to_dict()) for gui in self.gui]
+        d = self.to_dict()
+        [gui.render_game(d) for gui in self.gui]
         #self.gui[0].render_game(self.to_gui_dict())
 
     def end_game(self):

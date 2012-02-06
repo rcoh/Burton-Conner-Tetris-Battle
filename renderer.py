@@ -48,6 +48,7 @@ class PygameGoodRenderer(Renderer):
   OFFSET = (50, 50)
   SCALE = 20 
   RADIUS = 6
+  GAP = 0
   
   def __init__(self):
     pygame.init()
@@ -63,7 +64,7 @@ class PygameGoodRenderer(Renderer):
     y0 = self.OFFSET[1] - 1
     x1 = self.OFFSET[0] + 10*self.SCALE
     y1 = self.OFFSET[1] + 20*self.SCALE - 1
-    b2 = self.SCALE * 13 #x offset for second board
+    b2 = self.SCALE * (10 + self.GAP) #x offset for second board
 
     font = pygame.font.Font(None, 22)
 
@@ -100,7 +101,7 @@ class PygameGoodRenderer(Renderer):
       if y not in ["level","time_left","score"]:
         disp_x = x
         if x >= 10:
-          disp_x+=3
+          disp_x+=self.GAP
         pygame.draw.rect(self.background, self.color_deref(game_board[(x,y)]), 
             (self.OFFSET[0] + disp_x*self.SCALE, self.OFFSET[1] + y*self.SCALE, self.SCALE-1, self.SCALE-1))
         
@@ -165,6 +166,19 @@ class LedRenderer(Renderer):
  
   def render_game(self, game_board):
     packets = self.map_to_packets(game_board)
+    for (ip, port) in packets:
+      packet = packets[(ip, port)]
+      if not ip in self.sockets:
+        self.sockets[ip] = util.getConnectedSocket(ip, self.SOCK_PORT)
+      final_packet = util.composePixelStripPacket(packet, port) 
+      try:
+        if self.sockets[ip] != None:
+          self.sockets[ip].send(final_packet, 0x00)
+      except:
+        print 'failure sending packet'
+
+  def old_render_game(self, game_board):
+    packets = self.map_to_packets(game_board)
     
     packets_with_destinations = zip(self.POWER_SUPPLY_IPS, packets)
     for (ip, (port, packet)) in packets_with_destinations:
@@ -184,8 +198,52 @@ class LedRenderer(Renderer):
     strip = zeros((50,3), 'ubyte')
     strip[:] = (255,255,0)
     return [(1, strip), (2, strip)] * 4
-    
+
   def map_to_packets(self, game_board):
+    #start (x,y), dir (x,y), 
+    boards = [((10, 4), (1, -1), '10.32.0.31', 2),  #BOARD 1 TOP
+              ((10, 5), (1, 1), '10.32.0.31', 1),   #BOARD 1 MIDDLE UP
+              ((10,14), (1, -1), '10.32.0.32', 1),  #BOARD 1 MIDDLE LOW
+              ((10,15), (1, 1), '10.32.0.32', 2),   #BOARD 1 BOTTOM
+              ((9, 4), (-1, -1), '10.32.0.33', 2),
+              ((9, 5), (-1, 1), '10.32.0.33', 1),
+              ((9, 10), (-1, 1), '10.32.0.35', 2), #WIRED BACKWARDS
+              ((9, 19), (-1, -1), '10.32.0.35', 1)] #WIRED BACKWARDS
+    width = 10
+    ret = {}
+    for (start_x, start_y), (dir_x, dir_y), ip, port in boards:
+      strip = zeros((50, 3), 'ubyte')
+      index = 0
+      for y in range(start_y, start_y+(5*dir_y), dir_y):
+        #line is running other direction if we aren't the start_line xor we are going backwards
+        #anyway
+        if (dir_x == 1):
+          line_diff = bool((y-start_y) % 2) 
+          if line_diff:
+            act_dir_x = dir_x * -1
+            act_start_x = start_x + width - 1
+          else:
+            act_dir_x = dir_x
+            act_start_x = start_x
+        else:
+          line_diff = bool((y-start_y) % 2)
+          if line_diff:
+            act_dir_x = 1
+            act_start_x = start_x - (width - 1)
+          else:
+            act_start_x = start_x
+            act_dir_x = dir_x
+        for x in range(act_start_x, act_start_x+(width*act_dir_x), act_dir_x):
+          if (x,y) in game_board:
+            strip[index] = self.color_deref(game_board[(x,y)]) 
+          index += 1
+      assert index == 50
+      ret[(ip, port)] = strip
+    return ret
+
+
+    
+  def old_map_to_packets(self, game_board):
     """
     Performs the mapping between a game_board and a list of (port,packet) pairs.  The port,packet
     pairs should line up with the ip's in IP_ADDRESSES

@@ -39,55 +39,44 @@ import pygame
 
 TIME_LIMIT = 5 * 60  #seconds
 LINES_TO_ADVANCE = 8 #num lines needed to advance to next level
-LEVEL_SPEEDS = [300,250,200,150]
+LEVEL_SPEEDS = [200,150]
 
 MAXX = 20
 MAXY = 18
-(RIGHT, LEFT, UP, DOWN, DIE) = range(5)
-MOVES = {RIGHT:(1,0), LEFT:(-1,0), UP:(1,0), DOWN:(-1,0)}
+(LEFT, RIGHT, UP, DOWN, DROP, DIE) = range(6) 
+MOVES = {LEFT:(-1,0), RIGHT:(1,0), UP:(0,-1), DOWN:(0,1)}
 
 LEVEL_COLORS = ["red", "orange", "yellow", "green", "blue", "purple"]
-
-#one 20x18 board shared between players
-class Board():
-    """
-    The board represents the playing area. A grid of x by y blocks.
-    Stores blocks that are full.
-    """
-    def __init__(self, max_x=20, max_y=18): 
-        # blocks are stored in dict of (x,y)->"color"
-        self.grid = {}
-        self.max_x = max_x
-        self.max_y = max_y
-
-    def clear(self):
-        self.grid = {}
 
 #represents a player. each player has a board, current direction, score, etc
 class Player():
     def __init__(self, player_id, gs, board):
         self.id = player_id
         self.board = board
-        if player_id == 0:
-            x_pos = 3
-        else:
-            x_pos = MAXX - 3
+        x_pos = [3, MAXX - 4][player_id]
+        print "player id= ", player_id
+        print "x_pos = ", x_pos
         self.position = (x_pos, MAXY/2)
         self.score = 0
         self.gs = gs
-        self.direction = player_id #0 is right, 1 is left
+        self.direction = [RIGHT,LEFT][player_id] #0 is right, 1 is left
 
-    def handle_move(self, dir):
+    def handle_move(self, d):
         #add handling for case when dir is opposite direction of movement
-        self.direction = dir
+        if (self.direction==LEFT and d==RIGHT) or (self.direction==RIGHT and d==LEFT) or (self.direction==UP and d==DOWN) or (self.direction==DOWN and d==UP): 
+            return
+        else:
+            self.direction = d
 
     def move_tron(self):
-        self.position[0] += MOVES[self.direction][0]
-        self.position[1] += MOVES[self.direction][1]
-        if self.position in self.board:
+        old_pos = self.position
+        self.position = (self.position[0] + MOVES[self.direction][0],
+                         self.position[1] + MOVES[self.direction][1])
+        if self.position in self.board or self.position[0] < 0 or self.position[0] >= MAXX or self.position[1] < 0 or self.position[1] >= MAXY:
             #you hit something, you lose!
             self.gs.state = "ending"
-            self.gs.winner = (self.id + 1) % 2
+            self.gs.winner = [self.id, (self.id + 1) % 2][self.gs.num_players - 1]
+            self.board[old_pos] = 2 #yellow
             return
         else:
             self.board[self.position] = self.id
@@ -116,12 +105,12 @@ class TronGame(object):
     #initializes each game
     def init_game(self):
         print "init next game"
-        self.board = Board(MAXX,MAXY)
+        self.animation = {}
+        self.board = {}
         self.players = [None,None]
         self.gameState = GameState()
         self.board_animation(0,"up_arrow")
         self.board_animation(1,"up_arrow")
-        self.board.clear()
         self.start_time = None
         self.input.reset()
         self.update_gui()
@@ -138,6 +127,7 @@ class TronGame(object):
 
     def start_game(self):
         print "start game"
+        self.animation.clear()
         self.gameState.state = "playing"
         self.start_time = time()
         self.drop_time = time()
@@ -189,7 +179,8 @@ class TronGame(object):
                 p.move_tron()
 
     def update_gui(self):
-        [gui.render_game(self.to_dict()) for gui in self.gui]
+        d = self.to_dict()
+        [gui.render_game(d) for gui in self.gui]
         #self.gui[0].render_game(self.to_gui_dict())
 
     def end_game(self):
@@ -210,18 +201,18 @@ class TronGame(object):
                 winner_id = 1
         self.animate_ending(winner_id)
 
-    def board_animation(self, board_id, design, color="green"):
-        b = self.boards[board_id]
+    def board_animation(self, board_id, design, color=1):
         d = self.create_shapes(design)
         for coord in d:
-            b.landed[coord]=color
+            c = (coord[0] + board_id * MAXX/2, coord[1])
+            self.animation[c]=color
 
     def animate_ending(self,winner_board):
         if winner_board == 2:
             self.board_animation(0,"outline")
             self.board_animation(1,"outline")
         else:
-            self.board_animation(winner_board,"outline","yellow")
+            self.board_animation(winner_board,"outline",2)
         self.update_gui()
         sleep(3)
 
@@ -245,19 +236,25 @@ class TronGame(object):
         shapes["down_arrow"] = down_arrow
         shapes["up_arrow"] = up_arrow
         shapes["outline"] = outline
+        shapes["whole_outline"] = outline
         shapes["test"] = [(5,5)]
 
         return shapes[design]
 
     def to_dict(self):
-        player_colors = ["red", "green"]
+        player_colors = ["red", "green", "yellow"]
         d = {}
-        for (x,y) in board.grid:
-            d[(x,y)] = player_colors[board.grid[(x,y)]]
+
+        for (x,y) in self.board:
+            d[(x,y)] = player_colors[self.board[(x,y)]]
+
+        for (x,y) in self.animation:
+            d[(x,y)] = player_colors[self.animation[(x,y)]]
 
         for n in range(2):
             if self.players[n]!=None:
                 p = self.players[n]
+                offset = n*(MAXX/2)
 
                 #score  
                 score = p.score
@@ -279,7 +276,7 @@ class TronGame(object):
                         if time_left/60 >= i:
                             seconds = time_left - 60*i # is in .5-1 secs, etc
                             if not (.5<seconds<1.0 or 1.5<seconds<2.0 or 2.5<seconds<3.0):
-                                coord = (MAXX-1-i + offset, MAXY)
+                                coord = (MAXX/2-1-i + offset, MAXY)
                                 d[coord] = "white"
 
         return d
