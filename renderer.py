@@ -201,14 +201,14 @@ class LedRenderer(Renderer):
 
   def map_to_packets(self, game_board):
     #start (x,y), dir (x,y), 
-    boards = [((10, 4), (1, -1), '10.32.0.31', 2),  #BOARD 1 TOP
-              ((10, 5), (1, 1), '10.32.0.31', 1),   #BOARD 1 MIDDLE UP
-              ((10,14), (1, -1), '10.32.0.32', 1),  #BOARD 1 MIDDLE LOW
-              ((10,15), (1, 1), '10.32.0.32', 2),   #BOARD 1 BOTTOM
-              ((9, 4), (-1, -1), '10.32.0.33', 2),
-              ((9, 5), (-1, 1), '10.32.0.33', 1),
-              ((9, 10), (-1, 1), '10.32.0.35', 2), #WIRED BACKWARDS
-              ((9, 19), (-1, -1), '10.32.0.35', 1)] #WIRED BACKWARDS
+    boards = [((10, 4), (1, -1), '10.32.0.33', 2),  #BOARD 1 TOP
+              ((10, 5), (1, 1), '10.32.0.33', 1),   #BOARD 1 MIDDLE UP
+              ((10,14), (1, -1), '10.32.0.35', 2),  #BOARD 1 MIDDLE LOW
+              ((10,15), (1, 1), '10.32.0.35', 1),   #BOARD 1 BOTTOM
+              ((9, 4), (-1, -1), '10.32.0.31', 2),
+              ((9, 5), (-1, 1), '10.32.0.31', 1),
+              ((9, 10), (-1, 1), '10.32.0.32', 1), #WIRED BACKWARDS
+              ((9, 19), (-1, -1), '10.32.0.32', 2)] #WIRED BACKWARDS
     width = 10
     ret = {}
     for (start_x, start_y), (dir_x, dir_y), ip, port in boards:
