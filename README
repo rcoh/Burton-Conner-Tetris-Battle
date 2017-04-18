@@ -12,10 +12,10 @@ Press UP to join the game
 Once all players have joined, press DOWN to start the game
 Use LEFT and RIGHT to move your shape, UP to rotate, and DOWN to make it drop faster
 When you complete a line it will disappear from the board and you gain one point. Your score is displayed in binary below your board.
-If you clear two or more lines at once, n-1 incomplete lines will appear at the bottom of your opponent�s board. 
+If you clear two or more lines at once, n-1 incomplete lines will appear at the bottom of your opponent's board. 
 The blocks drop faster as players clear more lines. There are 6 possible levels
 
-When one player�s board reaches the top of the screen, they lose and the other player wins.
+When one player's board reaches the top of the screen, they lose and the other player wins.
 If neither player loses after 4 minutes, the player with the higher score wins.
 
 Press ESC to exit the program.
@@ -27,24 +27,6 @@ renderer.py
 tetris_shape.py
 ddrinput.py
 util.py
-
-
-BCTB Style guide:
-  Unlike the smootlight code, which was something of a hot mess, we are
-  going to follow actual python style conventions this time.
-
-method_names
-ClassNames
-variable_names
-Files are modules (like java packages --> multiple classes per file)
-
-INDENTS ARE 2 SPACES.  NOT 4.  NOT 8.  NOT TABS.  Thanks :).
-
-If you write something that is easily testable and mission critical, write a test for it!  Put it in
-the tests folder.  Consult the tests folder of the smootlight code for how
-to do that.
-
-This is going to be boss.
 
 
 This file is part of Burton-Conner Tetris Battle.
